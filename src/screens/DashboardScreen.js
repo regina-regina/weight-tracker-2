@@ -99,9 +99,11 @@ export const DashboardScreen = ({ onAddEntry }) => {
   let bodyFatPercentage = null;
   if (latestEntryWithMeasurements) {
     const e = latestEntryWithMeasurements;
-    bodyFatPercentage = calculateBodyFat(
+    const raw = calculateBodyFat(
       userData.gender, e.waist, e.neck, userData.height, e.hips
     );
+    // Показываем абсолютный процент, ограничиваем 0–100 (формула иногда даёт отрицательные значения при некорректных замерах)
+    bodyFatPercentage = raw != null ? Math.max(0, Math.min(100, raw)) : null;
   }
 
   const bmr = calculateBMR(userData.gender, currentWeight, userData.height, userData.age);
@@ -206,7 +208,7 @@ export const DashboardScreen = ({ onAddEntry }) => {
           </View>
         </View>
 
-        {/* === Обмен / расход / темп === */}
+        {/* === Плашка 1: Обмен и Расход === */}
         <View style={[styles.infoStrip, { backgroundColor: colors.pastelLavender }]}>
           <View style={styles.infoItem}>
             <Text style={styles.infoLabel}>Обмен</Text>
@@ -219,36 +221,36 @@ export const DashboardScreen = ({ onAddEntry }) => {
             <Text style={styles.infoValue}>{Math.round(tdee)}</Text>
             <Text style={styles.infoUnit}>ккал/день</Text>
           </View>
-          <View style={styles.infoSep} />
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Темп</Text>
-            <Text style={styles.infoValue}>
+        </View>
+
+        {/* === Плашка 2: Дефицит, Цель к, Темп === */}
+        <View style={[styles.deficitStrip, { backgroundColor: colors.pastelPeach }]}>
+          <View style={styles.deficitRow}>
+            <Text style={styles.deficitLabel}>Дефицит в день</Text>
+            <Text style={styles.deficitValue}>{weightToLose > 0 ? `${paceDeficits[userData.pace]} ккал` : '—'}</Text>
+          </View>
+          <View style={styles.deficitSep} />
+          <View style={styles.deficitRow}>
+            <Text style={styles.deficitLabel}>Цель к</Text>
+            <Text style={styles.deficitValue}>
+              {weightToLose > 0
+                ? (() => {
+                    const { weeks } = calculateTimeToGoal(currentWeight, userData.goal_weight, userData.pace);
+                    const d = new Date();
+                    d.setDate(d.getDate() + weeks * 7);
+                    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+                  })()
+                : '—'}
+            </Text>
+          </View>
+          <View style={styles.deficitSep} />
+          <View style={styles.deficitRow}>
+            <Text style={styles.deficitLabel}>Темп</Text>
+            <Text style={styles.deficitValue}>
               {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
             </Text>
           </View>
         </View>
-
-        {/* === Плашка: дефицит калорий + дата цели === */}
-        {weightToLose > 0 && (
-          <View style={[styles.deficitStrip, { backgroundColor: colors.pastelPeach }]}>
-            <View style={styles.deficitRow}>
-              <Text style={styles.deficitLabel}>Дефицит в день</Text>
-              <Text style={styles.deficitValue}>{paceDeficits[userData.pace]} ккал</Text>
-            </View>
-            <View style={styles.deficitSep} />
-            <View style={styles.deficitRow}>
-              <Text style={styles.deficitLabel}>Цель к</Text>
-              <Text style={styles.deficitValue}>
-                {(() => {
-                  const { weeks } = calculateTimeToGoal(currentWeight, userData.goal_weight, userData.pace);
-                  const d = new Date();
-                  d.setDate(d.getDate() + weeks * 7);
-                  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
-                })()}
-              </Text>
-            </View>
-          </View>
-        )}
 
         <View style={{ height: 90 }} />
       </ScrollView>
