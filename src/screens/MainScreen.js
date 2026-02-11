@@ -103,7 +103,6 @@ export const MainScreen = () => {
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
                 {tab.label}
               </Text>
-              {isActive && <View style={styles.tabActiveIndicator} />}
             </TouchableOpacity>
           );
         })}
@@ -175,13 +174,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_600SemiBold',
     color: colors.tabBarActive,
     fontWeight: '600',
-  },
-  tabActiveIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    width: 24,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: colors.tabBarActive,
   },
 });

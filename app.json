@@ -6,12 +6,38 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {"image": "./assets/splash-icon.png", "resizeMode": "contain", "backgroundColor": "#FAFBFC"},
-    "ios": {"supportsTablet": true, "bundleIdentifier": "com.weighttracker.app"},
-    "android": {"adaptiveIcon": {"foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#FAFBFC"}, "package": "com.weighttracker.app"},
-    "web": {"favicon": "./assets/favicon.png"},
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FAFBFC"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.weighttracker.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FAFBFC"
+      },
+      "package": "com.weighttracker.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "Weight Tracker",
+      "shortName": "Weight Tracker",
+      "themeColor": "#FAFBFC",
+      "backgroundColor": "#FAFBFC",
+      "display": "standalone"
+    },
+    "experiments": {
+      "baseUrl": "/weight-tracker-2"
+    },
     "plugins": ["react-native-iap/app.plugin.js"],
     "runtimeVersion": {"policy": "appVersion"},
-    "updates": {"checkAutomatically": "ON_LOAD", "fallbackToCacheTimeout": 0}
+    "updates": {
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    }
   }
 }

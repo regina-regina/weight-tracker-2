@@ -12,17 +12,14 @@ import { AppIcon } from '../components/AppIcon';
 import { colors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 
-// Чередование цветов карточек
-const cardColors = [
-  colors.pastelBlue,
-  colors.pastelMint,
-  colors.pastelLavender,
-  colors.pastelPeach,
-  colors.pastelPink,
-];
+// Цвета плашек по направлению веса
+const CARD_GOOD = colors.pastelMint;    // вес движется к цели (зелёный оттенок)
+const CARD_NEUTRAL = colors.pastelPeach; // без изменения
+const CARD_BAD = colors.pastelCoral;   // вес в противоположную сторону от цели
 
 export const HistoryScreen = ({ onEditEntry }) => {
   const [entries, setEntries] = useState([]);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -30,6 +27,9 @@ export const HistoryScreen = ({ onEditEntry }) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      const { data: userProfile } = await supabase.from('users').select('*').eq('id', user.id).single();
+      setUserData(userProfile || null);
 
       const { data, error } = await supabase
         .from('entries')
@@ -90,7 +90,7 @@ export const HistoryScreen = ({ onEditEntry }) => {
     });
   };
 
-  // Разница веса с предыдущей записью
+  // Разница веса с предыдущей записью (положительная = вес вырос)
   const getWeightDiff = (index) => {
     if (index >= entries.length - 1) return null;
     const current = entries[index].weight;
@@ -98,9 +98,21 @@ export const HistoryScreen = ({ onEditEntry }) => {
     return current - prev;
   };
 
+  // Цель: похудеть (goal_weight < current_weight) или набрать (goal_weight > current_weight)
+  const wantToLose = userData && userData.goal_weight != null && userData.current_weight != null
+    ? userData.current_weight > userData.goal_weight
+    : true; // по умолчанию считаем цель — похудение
+
+  const getCardColorByDiff = (diff) => {
+    if (diff === null) return CARD_NEUTRAL;
+    if (diff === 0) return CARD_NEUTRAL;
+    const good = wantToLose ? diff < 0 : diff > 0;
+    return good ? CARD_GOOD : CARD_BAD;
+  };
+
   const renderEntry = ({ item, index }) => {
     const diff = getWeightDiff(index);
-    const cardColor = cardColors[index % cardColors.length];
+    const cardColor = getCardColorByDiff(diff);
 
     return (
       <TouchableOpacity

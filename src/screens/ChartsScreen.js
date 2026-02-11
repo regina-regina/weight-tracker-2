@@ -58,10 +58,15 @@ export const ChartsScreen = () => {
 
   if (!userData || entries.length === 0) {
     return (
-      <View style={styles.emptyWrap}>
-        <Text style={styles.emptyEmoji}>📈</Text>
-        <Text style={styles.emptyTitle}>Пока мало данных</Text>
-        <Text style={styles.emptySub}>Добавьте несколько записей — графики появятся автоматически</Text>
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Графики</Text>
+        </View>
+        <View style={styles.emptyWrap}>
+          <Text style={styles.emptyEmoji}>📈</Text>
+          <Text style={styles.emptyTitle}>Пока мало данных</Text>
+          <Text style={styles.emptySub}>Добавьте несколько записей — графики появятся автоматически</Text>
+        </View>
       </View>
     );
   }
@@ -159,6 +164,9 @@ export const ChartsScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>Графики</Text>
+      </View>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -249,6 +257,19 @@ export const ChartsScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  headerContainer: {
+    paddingTop: 16,
+    paddingBottom: 8,
+    paddingHorizontal: 20,
+    backgroundColor: colors.background,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    fontFamily: 'Montserrat_700Bold',
+    color: colors.textPrimary,
+    letterSpacing: 0.3,
+  },
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: 20, paddingTop: 8 },
 

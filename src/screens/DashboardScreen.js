@@ -180,12 +180,12 @@ export const DashboardScreen = ({ onAddEntry }) => {
         </View>
 
         <View style={styles.tileRow}>
-          {/* % Жира / измерения */}
+          {/* Процент жира в теле */}
           <View style={[styles.tile, { backgroundColor: bodyFatPercentage !== null ? colors.pastelCoral : colors.pastelSage }]}>
             <Text style={styles.tileEmoji}>{bodyFatPercentage !== null ? '💪' : '📝'}</Text>
-            <Text style={styles.tileLabel}>{bodyFatPercentage !== null ? '% Жира' : 'Измерения'}</Text>
-            <Text style={styles.tileValue}>{bodyFatPercentage !== null ? bodyFatPercentage.toFixed(1) : '—'}</Text>
-            <Text style={styles.tileSub}>{bodyFatPercentage !== null ? '%' : 'добавьте'}</Text>
+            <Text style={styles.tileLabel}>{bodyFatPercentage !== null ? 'Жир в теле' : 'Измерения'}</Text>
+            <Text style={styles.tileValue}>{bodyFatPercentage !== null ? `${bodyFatPercentage.toFixed(1)} %` : '—'}</Text>
+            <Text style={styles.tileSub}>{bodyFatPercentage !== null ? 'процент от веса' : 'талия, шея, бёдра'}</Text>
           </View>
 
           {/* Калории */}
@@ -197,22 +197,24 @@ export const DashboardScreen = ({ onAddEntry }) => {
           </View>
         </View>
 
-        {/* === Info полоска BMR / TDEE / Темп === */}
+        {/* === Обмен в покое / суточный расход / темп === */}
         <View style={[styles.infoStrip, { backgroundColor: colors.pastelLavender }]}>
           <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>BMR</Text>
+            <Text style={styles.infoLabel}>Обмен в покое</Text>
             <Text style={styles.infoValue}>{Math.round(bmr)}</Text>
+            <Text style={styles.infoUnit}>ккал</Text>
           </View>
           <View style={styles.infoSep} />
           <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>TDEE</Text>
+            <Text style={styles.infoLabel}>Расход за день</Text>
             <Text style={styles.infoValue}>{Math.round(tdee)}</Text>
+            <Text style={styles.infoUnit}>ккал</Text>
           </View>
           <View style={styles.infoSep} />
           <View style={styles.infoItem}>
             <Text style={styles.infoLabel}>Темп</Text>
             <Text style={styles.infoValue}>
-              {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
+              {userData.pace === 'fast' ? 'Быстрый' : userData.pace === 'optimal' ? 'Оптимальный' : 'Медленный'}
             </Text>
           </View>
         </View>
@@ -392,6 +394,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
     color: colors.textPrimary,
+  },
+  infoUnit: {
+    fontSize: 10,
+    fontFamily: 'Montserrat_400Regular',
+    color: colors.textSecondary,
+    marginTop: 2,
   },
   infoSep: { width: 1, height: 34, backgroundColor: 'rgba(43,32,53,0.1)' },
 

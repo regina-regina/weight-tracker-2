@@ -18,7 +18,7 @@ import { Card } from '../components/Card';
 import { colors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 
-export const AddEntryScreen = ({ entry, onClose }) => {
+export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
   const isEditing = entry !== undefined && entry !== null;
   const existingEntry = entry;
 
@@ -126,6 +126,9 @@ export const AddEntryScreen = ({ entry, onClose }) => {
           .eq('id', existingEntry.id);
 
         if (error) throw error;
+        onSaved ? onSaved() : onClose();
+        setLoading(false);
+        return;
       } else {
         // Создание новой записи - проверяем дубликаты
         const { data: existingData } = await supabase
@@ -152,7 +155,7 @@ export const AddEntryScreen = ({ entry, onClose }) => {
                       .eq('id', existingData.id);
 
                     if (error) throw error;
-                    onClose();
+                    onSaved ? onSaved() : onClose();
                   } catch (error) {
                     Alert.alert('Ошибка', error.message);
                   }
@@ -177,7 +180,7 @@ export const AddEntryScreen = ({ entry, onClose }) => {
         }
       }
 
-      onClose();
+      onSaved ? onSaved() : onClose();
     } catch (error) {
       Alert.alert('Ошибка', error.message);
     } finally {
