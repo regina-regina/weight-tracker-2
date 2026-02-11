@@ -4,10 +4,10 @@ import { Button } from '../components/Button';
 import { colors } from '../styles/colors';
 import {
   getSubscriptionProducts,
-  hasActiveSubscription,
   requestSubscriptionPurchase,
   restoreSubscriptionPurchases,
   isIAPAvailable,
+  setCachedSubscription,
 } from '../services/subscription';
 import { SUBSCRIPTION_PRODUCT_IDS, SUBSCRIPTION_PRICES } from '../utils/subscriptionConstants';
 
@@ -111,6 +111,22 @@ export const SubscriptionScreen = ({ onSuccess }) => {
             style={styles.cardButton}
           />
         </View>
+
+        <View style={[styles.card, styles.cardTest]}>
+          <Text style={styles.cardBadgeTest}>Для теста</Text>
+          <Text style={styles.cardTitle}>Без ограничений</Text>
+          <Text style={styles.cardPrice}>Тестовый режим</Text>
+          <Text style={styles.cardPeriod}>полный доступ без подписки</Text>
+          <Button
+            title="Использовать для теста"
+            onPress={async () => {
+              await setCachedSubscription({ hasAccess: true, testMode: true });
+              onSuccess?.();
+            }}
+            variant="outline"
+            style={styles.cardButton}
+          />
+        </View>
       </View>
 
       {!iapReady && (
@@ -193,6 +209,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.accent,
   },
+  cardTest: {
+    borderWidth: 2,
+    borderColor: colors.textLight,
+  },
   cardBadge: {
     position: 'absolute',
     top: 12,
@@ -200,6 +220,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Montserrat_600SemiBold',
     color: colors.accent,
+  },
+  cardBadgeTest: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    fontSize: 12,
+    fontFamily: 'Montserrat_600SemiBold',
+    color: colors.textSecondary,
   },
   cardTitle: {
     fontSize: 20,

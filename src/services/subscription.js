@@ -52,7 +52,11 @@ export async function getSubscriptionProducts() {
 }
 
 export async function hasActiveSubscription() {
-  if (FORCE_SHOW_PAYWALL) return false;
+  if (FORCE_SHOW_PAYWALL) {
+    const cached = await getCachedSubscription();
+    if (cached?.testMode === true) return true;
+    return false;
+  }
   const available = await isIAPAvailable();
   if (!available) {
     const cached = await getCachedSubscription();
