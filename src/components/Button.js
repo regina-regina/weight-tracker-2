@@ -8,31 +8,45 @@ export const Button = ({ title, onPress, style, disabled, loading, variant = 'pr
 
   const getButtonStyle = () => {
     switch (variant) {
-      case 'secondary':  return styles.buttonSecondary;
-      case 'outline':    return styles.buttonOutline;
-      case 'danger':     return styles.buttonDanger;
-      default:           return styles.button;
+      case 'secondary':
+        return styles.buttonSecondary;
+      case 'outline':
+        return styles.buttonOutline;
+      case 'danger':
+        return styles.buttonDanger;
+      default:
+        return styles.button;
     }
   };
 
   const getTextStyle = () => {
     switch (variant) {
-      case 'secondary':  return styles.buttonTextSecondary;
-      case 'outline':    return styles.buttonTextOutline;
-      case 'danger':     return styles.buttonTextDanger;
-      default:           return styles.buttonText;
+      case 'secondary':
+        return styles.buttonTextSecondary;
+      case 'outline':
+        return styles.buttonTextOutline;
+      case 'danger':
+        return styles.buttonTextDanger;
+      default:
+        return styles.buttonText;
     }
   };
 
   return (
     <TouchableOpacity
-      style={[getButtonStyle(), isDisabled && styles.buttonDisabled, style]}
+      style={[
+        getButtonStyle(),
+        isDisabled && styles.buttonDisabled,
+        style,
+      ]}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.78}
+      activeOpacity={0.7}
     >
       {isLoading ? (
-        <ActivityIndicator color={variant === 'primary' || variant === 'danger' ? '#FFFFFF' : colors.primary} />
+        <ActivityIndicator
+          color={variant === 'primary' || variant === 'danger' ? '#FFFFFF' : colors.primary}
+        />
       ) : (
         <Text style={getTextStyle()}>{title}</Text>
       )}
@@ -41,85 +55,85 @@ export const Button = ({ title, onPress, style, disabled, loading, variant = 'pr
 };
 
 const styles = StyleSheet.create({
-  // Primary — coral pill (как "Start Now!" в рефе)
+  // Primary
   button: {
     backgroundColor: colors.primary,
-    borderRadius: 28,
-    paddingVertical: 16,
+    borderRadius: 24,
+    padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 54,
+    minHeight: 58,
     shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.28,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    letterSpacing: 0.4,
+    letterSpacing: 0.3,
   },
 
-  // Secondary — мягкий серый
+  // Secondary
   buttonSecondary: {
-    backgroundColor: '#F2ECF5',
-    borderRadius: 28,
-    paddingVertical: 16,
+    backgroundColor: '#F0F4F8',
+    borderRadius: 24,
+    padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 54,
+    minHeight: 58,
   },
   buttonTextSecondary: {
     color: colors.textSecondary,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    letterSpacing: 0.4,
+    letterSpacing: 0.3,
   },
 
   // Outline
   buttonOutline: {
     backgroundColor: 'transparent',
-    borderRadius: 28,
-    paddingVertical: 16,
+    borderRadius: 24,
+    padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 54,
+    minHeight: 58,
     borderWidth: 2,
     borderColor: colors.primary,
   },
   buttonTextOutline: {
     color: colors.primary,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    letterSpacing: 0.4,
+    letterSpacing: 0.3,
   },
 
-  // Danger — лёгкий красный фон
+  // Danger
   buttonDanger: {
     backgroundColor: '#FFF0F0',
-    borderRadius: 28,
-    paddingVertical: 16,
+    borderRadius: 24,
+    padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 54,
-    borderWidth: 1.5,
+    minHeight: 58,
+    borderWidth: 2,
     borderColor: '#FFCDD2',
   },
   buttonTextDanger: {
-    color: '#E53935',
-    fontSize: 16,
+    color: '#FF5252',
+    fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    letterSpacing: 0.4,
+    letterSpacing: 0.3,
   },
 
   buttonDisabled: {
-    opacity: 0.42,
+    opacity: 0.45,
     shadowColor: 'transparent',
     elevation: 0,
   },

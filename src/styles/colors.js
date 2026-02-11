@@ -1,51 +1,39 @@
 export const colors = {
-  // === Фоны ===
-  background: '#FFF0F3',          // тёплый розовый фон (как в рефах)
-  backgroundLight: '#FFFAFC',     // чуть светлее для внутренних блоков
-  cardBackground: '#FFFFFF',
-
-  // === Пастель карточки ===
-  pastelPink: '#FFE4EC',
-  pastelMint: '#E0F7F0',
-  pastelLavender: '#EDE8FF',
-  pastelPeach: '#FFF0E0',
-  pastelBlue: '#E4EEFF',
-  pastelYellow: '#FFF8E0',
-  pastelCoral: '#FFE8E4',
-  pastelSage: '#E8F5E8',
-  pastelBeige: '#F7F2EA',
+  // Очень мягкие пастельные цвета как в референсах
+  pastelPink: '#FFD4E8',
+  pastelMint: '#C5F0E3',
+  pastelLavender: '#E0D4FF',
+  pastelPeach: '#FFE0CB',
+  pastelBeige: '#F5EFE7',
+  pastelBlue: '#CDE3FF',
   pastelCream: '#FFF8F0',
-
-  // === Яркие плитки (как цветные блоки в рефах) ===
-  tilePink: '#F9C5D5',
-  tileMint: '#A8E6CF',
-  tileLavender: '#C3B1E8',
-  tilePeach: '#FFCC99',
-  tileBlue: '#A3D4FF',
-  tileYellow: '#FFE082',
-  tileCoral: '#FF9A80',
-  tileSage: '#B5DEBA',
-  tileDark: '#3D3352',            // тёмный блок (как "Finding Calm" в рефе)
-
-  // === Текст ===
-  textPrimary: '#2B2035',         // тёплый тёмный (не чистый чёрный)
-  textSecondary: '#8A7F95',       // мягкий серый
-  textLight: '#B8B0C2',
-
-  // === Акценты ===
-  primary: '#FF7F6B',             // coral-orange — главная кнопка
-  primaryDark: '#E8604A',
-  accent: '#FF6B9D',              // розовый акцент для ссылок
-  success: '#5FBF9E',
+  pastelYellow: '#FFF3D4',
+  pastelCoral: '#FFCDC7',
+  pastelSage: '#D5E5D7',
+  
+  // Фоновые цвета - розоватые как в референсах
+  background: '#FFF5F7',
+  cardBackground: '#FFFFFF',
+  
+  // Текст - темный и контрастный
+  textPrimary: '#2B3A48',
+  textSecondary: '#8C97A3',
+  textLight: '#B8C2CC',
+  
+  // Акцентные цвета - яркие кнопки
+  primary: '#FF6B9D',
+  primaryDark: '#E85883',
+  accent: '#FF8FAB',
+  success: '#7FD9C1',
   warning: '#FFB84D',
-
-  // === Навигация ===
+  
+  // Навигация - минималистичная
   tabBarBackground: '#FFFFFF',
-  tabBarActive: '#FF7F6B',        // coral — активный таб
-  tabBarInactive: '#C5BDD3',
-  tabBarBorder: '#F0EBF2',
-
-  // === Графики ===
+  tabBarActive: '#FF6B9D',
+  tabBarInactive: '#C5CFD9',
+  tabBarBorder: '#F0F4F8',
+  
+  // Графики - сочные но мягкие
   chartPink: '#FFB4D0',
   chartMint: '#95E1D3',
   chartLavender: '#C8B4E8',

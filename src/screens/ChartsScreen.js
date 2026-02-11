@@ -11,8 +11,7 @@ import {
 import { LineChart } from 'react-native-gifted-charts';
 import { colors } from '../styles/colors';
 import { supabase } from '../services/supabase';
-import { calculateWeightLossForecast, calculateBodyFat } from '../utils/calculations';
-import { paces } from '../utils/constants';
+import { calculateBodyFat } from '../utils/calculations';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -23,7 +22,6 @@ export const ChartsScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [weightPeriod, setWeightPeriod] = useState('month');
   const [bodyFatPeriod, setBodyFatPeriod] = useState('month');
-  const [forecastPeriod, setForecastPeriod] = useState('all');
 
   const loadData = async () => {
     try {
@@ -77,50 +75,32 @@ export const ChartsScreen = () => {
     return data.filter(e => new Date(e.date) >= cutoff);
   };
 
+  const formatDateLabel = (dateStr) => {
+    const [, month, day] = dateStr.split('-');
+    return `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}`;
+  };
+
   // === ДАННЫЕ ГРАФИКА ВЕСА ===
   const filteredWeight = filterByPeriod(entries, weightPeriod);
-  const weightData = filteredWeight.map((e, i) => {
-    const [, month, day] = e.date.split('-');
-    return {
-      value: e.weight,
-      label: filteredWeight.length > 1 && i % Math.max(1, Math.ceil(filteredWeight.length / 5)) === 0 ? `${day}/${month}` : '',
-      date: e.date,
-    };
-  });
+  const weightValues = filteredWeight.length ? filteredWeight.map(e => e.weight) : [];
+  const weightMin = weightValues.length ? Math.floor(Math.min(...weightValues) * 2) / 2 : 50;
+  const weightMax = weightValues.length ? Math.ceil(Math.max(...weightValues) * 2) / 2 : 60;
+  const weightData = filteredWeight.map((e, i) => ({
+    value: e.weight,
+    label: filteredWeight.length > 1 && i % Math.max(1, Math.ceil(filteredWeight.length / 6)) === 0 ? formatDateLabel(e.date) : '',
+    date: formatDateLabel(e.date),
+  }));
 
   // === ДАННЫЕ % ЖИРА ===
   const bodyFatEntries = entries.filter(e => e.waist && e.neck);
   const filteredBF = filterByPeriod(bodyFatEntries, bodyFatPeriod);
   const bodyFatData = filteredBF.map((e, i) => {
-    const [, month, day] = e.date.split('-');
     const bf = calculateBodyFat(userData.gender, e.waist, e.neck, userData.height, e.hips);
     return {
       value: bf,
-      label: i % Math.max(1, Math.ceil(filteredBF.length / 5)) === 0 ? `${day}/${month}` : '',
-      date: e.date,
+      label: i % Math.max(1, Math.ceil(filteredBF.length / 6)) === 0 ? formatDateLabel(e.date) : '',
+      date: formatDateLabel(e.date),
     };
-  });
-
-  // === ПРОГНОЗЫ ===
-  const currentWeight = entries[entries.length - 1].weight;
-  const forecasts = paces.map(p => ({
-    ...p,
-    data: calculateWeightLossForecast(currentWeight, userData.goal_weight, p.value),
-  }));
-  const maxLen = Math.max(...forecasts.map(f => f.data.length));
-  const forecastCount = forecastPeriod === 'week' ? 2 : forecastPeriod === 'month' ? 4 : maxLen;
-
-  const historicalData = entries.slice(-Math.min(3, entries.length)).map((e, i, arr) => {
-    const [, month, day] = e.date.split('-');
-    return { value: e.weight, label: (i === 0 || i === arr.length - 1) ? `${day}/${month}` : '' };
-  });
-
-  const forecastDatasets = forecasts.map(forecast => {
-    const pts = forecast.data.slice(1, forecastCount + 1).map((pt, i) => {
-      const d = new Date(pt.date);
-      return { value: pt.weight, label: i % Math.max(1, Math.ceil(forecastCount / 4)) === 0 ? `${d.getDate()}/${d.getMonth()+1}` : '' };
-    });
-    return { color: forecast.color, label: forecast.label, data: [...historicalData, ...pts] };
   });
 
   // === КОМПОНЕНТ: period selector (pill tabs) ===
@@ -144,9 +124,10 @@ export const ChartsScreen = () => {
     { value: 'all', label: 'Все' },
   ];
 
-  // Общие настройки для LineChart
-  const chartBase = (color) => ({
-    width: screenWidth - 64,
+  const formatKgLabel = (v) => Number(v).toFixed(1);
+
+  const chartBase = (color, opts = {}) => ({
+    width: opts.width ?? screenWidth - 64,
     height: 180,
     curved: true,
     areaChart: true,
@@ -162,15 +143,18 @@ export const ChartsScreen = () => {
     dataPointsRadius: 5,
     initialSpacing: 10,
     endSpacing: 10,
-    noOfSections: 4,
+    noOfSections: opts.noOfSections ?? 4,
+    maxValue: opts.maxValue,
+    minValue: opts.minValue,
     yAxisColor: 'transparent',
     xAxisColor: '#EDE8F0',
     yAxisTextStyle: styles.axisText,
     xAxisLabelTextStyle: styles.axisText,
-    showVerticalLines: false,
+    yAxisLabelFormatter: opts.yAxisLabelFormatter ?? formatKgLabel,
+    showVerticalLines: true,
     rulesColor: '#EDE8F0',
     rulesType: 'solid',
-    adjustToWidth: true,
+    adjustToWidth: !opts.scrollable,
   });
 
   return (
@@ -186,30 +170,40 @@ export const ChartsScreen = () => {
           <Text style={styles.chartTitle}>📈 Изменение веса</Text>
           <PeriodSelector period={weightPeriod} setPeriod={setWeightPeriod} options={periodOpts} />
           {weightData.length > 1 ? (
-            <View style={styles.chartBox}>
-              <LineChart
-                {...chartBase(colors.chartPink)}
-                data={weightData}
-                spacing={Math.min(52, Math.max(22, (screenWidth - 100) / Math.max(1, weightData.length)))}
-                pointerConfig={{
-                  pointerStripHeight: 140,
-                  pointerStripColor: colors.textSecondary,
-                  pointerStripWidth: 1.5,
-                  pointerColor: colors.chartPink,
-                  radius: 6,
-                  pointerLabelWidth: 90,
-                  pointerLabelHeight: 60,
-                  activatePointersOnLongPress: false,
-                  autoAdjustPointerLabelPosition: false,
-                  pointerLabelComponent: (items) => (
-                    <View style={styles.tooltip}>
-                      <Text style={styles.tooltipVal}>{items[0].value} кг</Text>
-                      <Text style={styles.tooltipDate}>{items[0].date}</Text>
-                    </View>
-                  ),
-                }}
-              />
-            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chartScroll} contentContainerStyle={styles.chartScrollContent}>
+              <View style={styles.chartBox}>
+                <LineChart
+                  {...chartBase(colors.chartPink, {
+                    noOfSections: Math.max(2, Math.round((weightMax - weightMin) * 2)),
+                    minValue: Math.max(30, weightMin - 1),
+                    maxValue: weightMax + 1,
+                    scrollable: true,
+                    width: Math.max(screenWidth - 64, weightData.length * 44),
+                    yAxisLabelFormatter: formatKgLabel,
+                  })}
+                  data={weightData}
+                  spacing={44}
+                  yAxisLabelWidth={36}
+                  pointerConfig={{
+                    pointerStripHeight: 140,
+                    pointerStripColor: colors.textSecondary,
+                    pointerStripWidth: 1.5,
+                    pointerColor: colors.chartPink,
+                    radius: 6,
+                    pointerLabelWidth: 94,
+                    pointerLabelHeight: 56,
+                    activatePointersOnLongPress: false,
+                    autoAdjustPointerLabelPosition: true,
+                    pointerLabelComponent: (items) => (
+                      <View style={styles.tooltip}>
+                        <Text style={styles.tooltipDate}>{items[0].date}</Text>
+                        <Text style={styles.tooltipVal}>{Number(items[0].value).toFixed(1)} кг</Text>
+                      </View>
+                    ),
+                  }}
+                />
+              </View>
+            </ScrollView>
           ) : (
             <Text style={styles.noDataText}>Добавьте ещё одну запись для графика</Text>
           )}
@@ -231,14 +225,14 @@ export const ChartsScreen = () => {
                   pointerStripWidth: 1.5,
                   pointerColor: colors.chartMint,
                   radius: 6,
-                  pointerLabelWidth: 90,
-                  pointerLabelHeight: 60,
+                  pointerLabelWidth: 94,
+                  pointerLabelHeight: 56,
                   activatePointersOnLongPress: false,
-                  autoAdjustPointerLabelPosition: false,
+                  autoAdjustPointerLabelPosition: true,
                   pointerLabelComponent: (items) => (
                     <View style={styles.tooltip}>
-                      <Text style={styles.tooltipVal}>{items[0].value.toFixed(1)}%</Text>
                       <Text style={styles.tooltipDate}>{items[0].date}</Text>
+                      <Text style={styles.tooltipVal}>{items[0].value.toFixed(1)}%</Text>
                     </View>
                   ),
                 }}
@@ -246,65 +240,6 @@ export const ChartsScreen = () => {
             </View>
           </View>
         )}
-
-        {/* === ПРОГНОЗ === */}
-        <View style={[styles.chartCard, { backgroundColor: colors.pastelLavender }]}>
-          <Text style={styles.chartTitle}>🔮 Прогноз</Text>
-          <PeriodSelector period={forecastPeriod} setPeriod={setForecastPeriod} options={periodOpts} />
-
-          {/* Легенда */}
-          <View style={styles.legendWrap}>
-            {forecasts.map(f => {
-              const last = f.data[f.data.length - 1];
-              const d = new Date(last.date);
-              return (
-                <View key={f.value} style={styles.legendRow}>
-                  <View style={[styles.legendDot, { backgroundColor: f.color }]} />
-                  <Text style={styles.legendLabel}>{f.label}</Text>
-                  <Text style={styles.legendDate}>к {d.getDate()}.{d.getMonth()+1}.{d.getFullYear()}</Text>
-                </View>
-              );
-            })}
-          </View>
-
-          {forecastDatasets[0]?.data.length > 1 ? (
-            <View style={styles.chartBox}>
-              <LineChart
-                data={forecastDatasets[0].data}
-                data2={forecastDatasets[1]?.data}
-                data3={forecastDatasets[2]?.data}
-                width={screenWidth - 64}
-                height={180}
-                curved
-                isAnimated
-                animationDuration={800}
-                color={forecasts[0].color}
-                color2={forecasts[1].color}
-                color3={forecasts[2].color}
-                thickness={2.5}
-                thickness2={2.5}
-                thickness3={2.5}
-                hideDataPoints
-                hideDataPoints2
-                hideDataPoints3
-                spacing={Math.min(36, Math.max(14, (screenWidth - 100) / Math.max(1, forecastDatasets[0].data.length)))}
-                initialSpacing={10}
-                endSpacing={10}
-                noOfSections={4}
-                yAxisColor="transparent"
-                xAxisColor="#EDE8F0"
-                yAxisTextStyle={styles.axisText}
-                xAxisLabelTextStyle={styles.axisText}
-                showVerticalLines={false}
-                rulesColor="#EDE8F0"
-                rulesType="dashed"
-                adjustToWidth
-              />
-            </View>
-          ) : (
-            <Text style={styles.noDataText}>Недостаточно данных для прогноза</Text>
-          )}
-        </View>
 
         <View style={{ height: 90 }} />
       </ScrollView>
@@ -368,24 +303,19 @@ const styles = StyleSheet.create({
   // Axis
   axisText: { fontSize: 10, fontFamily: 'Montserrat_400Regular', color: colors.textSecondary },
 
-  // Tooltip
+  chartScroll: { marginTop: 6 },
+  chartScrollContent: { paddingRight: 20 },
   tooltip: {
-    backgroundColor: 'rgba(43,32,53,0.85)',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    backgroundColor: 'rgba(43,32,53,0.9)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingTop: 12,
     borderRadius: 10,
-    marginLeft: -40,
-    marginTop: -30,
+    marginLeft: -44,
+    marginTop: 4,
   },
-  tooltipVal: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#FFFFFF', marginBottom: 1 },
+  tooltipVal: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#FFFFFF', marginTop: 4 },
   tooltipDate: { fontSize: 11, fontFamily: 'Montserrat_400Regular', color: '#CCC' },
-
-  // Legend
-  legendWrap: { marginBottom: 14 },
-  legendRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  legendDot: { width: 12, height: 12, borderRadius: 6 },
-  legendLabel: { fontSize: 13, fontFamily: 'Montserrat_600SemiBold', color: colors.textPrimary, flex: 1 },
-  legendDate: { fontSize: 12, fontFamily: 'Montserrat_400Regular', color: colors.textSecondary },
 
   noDataText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: colors.textSecondary, textAlign: 'center', marginVertical: 30 },
 });

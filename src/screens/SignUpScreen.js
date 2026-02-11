@@ -13,8 +13,10 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { colors } from '../styles/colors';
 import { supabase } from '../services/supabase';
+import { getAuthErrorMessage } from '../utils/authMessages';
 
 export const SignUpScreen = ({ onSignUpSuccess, onLoginPress }) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -45,12 +47,12 @@ export const SignUpScreen = ({ onSignUpSuccess, onLoginPress }) => {
         Alert.alert(
           'Регистрация успешна!',
           'Теперь заполните информацию о себе',
-          [{ text: 'Продолжить', onPress: onSignUpSuccess }]
+          [{ text: 'Продолжить', onPress: () => onSignUpSuccess(name.trim()) }]
         );
       }
     } catch (error) {
       console.log('Ошибка регистрации:', error);
-      Alert.alert('Ошибка регистрации', error.message || 'Не удалось создать аккаунт');
+      Alert.alert('Ошибка регистрации', getAuthErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -78,6 +80,14 @@ export const SignUpScreen = ({ onSignUpSuccess, onLoginPress }) => {
         <View style={styles.formSheetHandle} />
 
         <Text style={styles.formTitle}>Создать аккаунт</Text>
+
+        <Input
+          label="Имя"
+          value={name}
+          onChangeText={setName}
+          placeholder="Как к вам обращаться?"
+          autoCapitalize="words"
+        />
 
         <Input
           label="Email"
@@ -111,7 +121,7 @@ export const SignUpScreen = ({ onSignUpSuccess, onLoginPress }) => {
           title="Зарегистрироваться"
           onPress={handleSignUp}
           loading={loading}
-          disabled={!email || !password || !confirmPassword}
+          disabled={!email || !password || !confirmPassword || loading}
           style={styles.signupButton}
         />
 

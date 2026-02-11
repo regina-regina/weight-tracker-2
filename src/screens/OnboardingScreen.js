@@ -14,10 +14,11 @@ import { Button } from '../components/Button';
 import { colors } from '../styles/colors';
 import { activityLevels, paces, genders } from '../utils/constants';
 import { supabase } from '../services/supabase';
+import { getAuthErrorMessage } from '../utils/authMessages';
 
 const TOTAL_STEPS = 4;
 
-export const OnboardingScreen = ({ onComplete }) => {
+export const OnboardingScreen = ({ initialName, onComplete }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -70,8 +71,9 @@ export const OnboardingScreen = ({ onComplete }) => {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) throw new Error('Ошибка аутентификации');
 
-      const { error: userError } = await supabase.from('users').insert([{
+      const { error: userError } = await supabase.from('users').upsert([{
         id: user.id,
+        name: (initialName && initialName.trim()) || null,
         gender,
         age: parseInt(age),
         height: parseFloat(height),
@@ -79,12 +81,12 @@ export const OnboardingScreen = ({ onComplete }) => {
         goal_weight: parseFloat(goalWeight),
         activity_level: activityLevel,
         pace,
-      }]);
+      }], { onConflict: 'id' });
 
       if (userError) throw userError;
       onComplete();
     } catch (error) {
-      Alert.alert('Ошибка', error.message);
+      Alert.alert('Ошибка', getAuthErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -237,6 +239,7 @@ export const OnboardingScreen = ({ onComplete }) => {
             title={step === TOTAL_STEPS ? 'Завершить 🎉' : 'Далее'}
             onPress={handleNext}
             loading={loading}
+            disabled={loading}
             style={styles.nextBtn}
           />
         </View>
@@ -253,7 +256,7 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: {
     padding: 24,
-    paddingTop: 56,
+    paddingTop: 88,
     alignItems: 'center',
   },
 

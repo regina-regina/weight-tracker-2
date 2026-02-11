@@ -21,6 +21,7 @@ export const getBMICategory = (bmi) => {
 // Расчет процента жировой массы (US Navy Method)
 export const calculateBodyFat = (gender, waist, neck, height, hips = null) => {
   if (gender === 'male') {
+    // Формула для мужчин
     return (
       495 /
         (1.0324 -
@@ -29,6 +30,7 @@ export const calculateBodyFat = (gender, waist, neck, height, hips = null) => {
       450
     );
   } else {
+    // Формула для женщин (требуется обхват бедер)
     if (!hips) return null;
     return (
       495 /
@@ -51,11 +53,11 @@ export const calculateBMR = (gender, weight, height, age) => {
 
 // Множители уровня активности
 export const activityMultipliers = {
-  sedentary: 1.2,
-  light: 1.375,
-  moderate: 1.55,
-  high: 1.725,
-  extreme: 1.9,
+  sedentary: 1.2, // Сидячий образ жизни
+  light: 1.375, // Легкая активность (1-3 дня в неделю)
+  moderate: 1.55, // Умеренная активность (3-5 дней в неделю)
+  high: 1.725, // Высокая активность (6-7 дней в неделю)
+  extreme: 1.9, // Экстремальная активность (физическая работа или 2 тренировки в день)
 };
 
 // Расчет TDEE (Total Daily Energy Expenditure)
@@ -65,17 +67,21 @@ export const calculateTDEE = (bmr, activityLevel) => {
 
 // Дефицит калорий для разных темпов похудения
 export const paceDeficits = {
-  fast: 750,
-  optimal: 500,
-  slow: 250,
+  fast: 750, // Быстрый темп (~0.75 кг в неделю)
+  optimal: 500, // Оптимальный темп (~0.5 кг в неделю)
+  slow: 250, // Медленный темп (~0.25 кг в неделю)
 };
 
 // Расчет рекомендуемого потребления калорий
 export const calculateDailyCalories = (tdee, pace) => {
-  return Math.max(1200, tdee - paceDeficits[pace]);
+  return Math.max(1200, tdee - paceDeficits[pace]); // Минимум 1200 калорий в день
 };
 
 // Прогноз снижения веса
+// weightLossPerWeek - в кг
+// currentWeight - текущий вес в кг
+// goalWeight - целевой вес в кг
+// возвращает массив объектов {date, weight}
 export const calculateWeightLossForecast = (
   currentWeight,
   goalWeight,
@@ -86,48 +92,49 @@ export const calculateWeightLossForecast = (
     throw new Error('Вес должен быть положительным числом');
   }
   if (currentWeight <= goalWeight) {
-    return [{ date: new Date(startDate), weight: currentWeight }];
+    return [{date: new Date(startDate), weight: currentWeight}];
   }
-
+  
   const forecast = [];
   const calorieDeficit = paceDeficits[pace];
+  // ИСПРАВЛЕНО: 7700 калорий = 1 кг жира (было 1100 - неправильно!)
   const weightLossPerWeek = (calorieDeficit * 7) / 7700;
-
+  
   let currentDate = new Date(startDate);
   let weight = currentWeight;
-
+  
   forecast.push({
     date: new Date(currentDate),
     weight: weight,
   });
-
+  
+  // Генерируем прогноз до достижения целевого веса
+  // Максимум 104 недели (2 года) для безопасности
   const maxWeeks = 104;
-
+  
   for (let week = 1; week <= maxWeeks; week++) {
     currentDate.setDate(currentDate.getDate() + 7);
     weight = Math.max(goalWeight, weight - weightLossPerWeek);
-
+    
     forecast.push({
       date: new Date(currentDate),
       weight: parseFloat(weight.toFixed(1)),
     });
-
+    
+    // Если достигли целевого веса, останавливаемся
     if (weight <= goalWeight) break;
   }
-
+  
   return forecast;
 };
 
 // Расчет времени до достижения цели
-// ИСПРАВЛЕНО: формула была calorieDeficit / 1100, теперь (calorieDeficit * 7) / 7700
 export const calculateTimeToGoal = (currentWeight, goalWeight, pace) => {
   const weightToLose = currentWeight - goalWeight;
-  if (weightToLose <= 0) return { weeks: 0, months: 0 };
-
   const calorieDeficit = paceDeficits[pace];
-  const weightLossPerWeek = (calorieDeficit * 7) / 7700;
+  const weightLossPerWeek = calorieDeficit / 1100;
   const weeksToGoal = weightToLose / weightLossPerWeek;
-
+  
   return {
     weeks: Math.ceil(weeksToGoal),
     months: Math.ceil(weeksToGoal / 4),

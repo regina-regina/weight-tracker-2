@@ -15,6 +15,8 @@ import {
   calculateBMR,
   calculateTDEE,
   calculateDailyCalories,
+  calculateTimeToGoal,
+  paceDeficits,
 } from '../utils/calculations';
 
 export const DashboardScreen = ({ onAddEntry }) => {
@@ -144,10 +146,10 @@ export const DashboardScreen = ({ onAddEntry }) => {
             <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
           </View>
 
-          {/* Метки начало → цель */}
+          {/* Метки: начальный вес у начала бара, целевой — у конца */}
           <View style={styles.progressLabels}>
-            <Text style={styles.progressLabelLeft}>{initialWeight} кг</Text>
-            <Text style={styles.progressLabelRight}>🎯 {userData.goal_weight} кг</Text>
+            <Text style={styles.progressLabel}>{initialWeight} кг</Text>
+            <Text style={styles.progressLabel}>🎯 {userData.goal_weight} кг</Text>
           </View>
 
           {/* Остаток / достигнута */}
@@ -214,6 +216,28 @@ export const DashboardScreen = ({ onAddEntry }) => {
             </Text>
           </View>
         </View>
+
+        {/* === Плашка: дефицит калорий + дата цели === */}
+        {weightToLose > 0 && (
+          <View style={[styles.deficitStrip, { backgroundColor: colors.pastelPeach }]}>
+            <View style={styles.deficitRow}>
+              <Text style={styles.deficitLabel}>Дефицит в день</Text>
+              <Text style={styles.deficitValue}>{paceDeficits[userData.pace]} ккал</Text>
+            </View>
+            <View style={styles.deficitSep} />
+            <View style={styles.deficitRow}>
+              <Text style={styles.deficitLabel}>Цель к</Text>
+              <Text style={styles.deficitValue}>
+                {(() => {
+                  const { weeks } = calculateTimeToGoal(currentWeight, userData.goal_weight, userData.pace);
+                  const d = new Date();
+                  d.setDate(d.getDate() + weeks * 7);
+                  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+                })()}
+              </Text>
+            </View>
+          </View>
+        )}
 
         <View style={{ height: 90 }} />
       </ScrollView>
@@ -305,10 +329,10 @@ const styles = StyleSheet.create({
   progressLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
   },
-  progressLabelLeft: { fontSize: 12, fontFamily: 'Montserrat_500Medium', color: colors.textSecondary },
-  progressLabelRight: { fontSize: 12, fontFamily: 'Montserrat_600SemiBold', color: colors.textPrimary },
+  progressLabel: { fontSize: 13, fontFamily: 'Montserrat_500Medium', color: colors.textSecondary },
   remainingText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: colors.primary },
   achievedText: { fontSize: 15, fontFamily: 'Montserrat_700Bold', color: colors.success },
 
@@ -370,4 +394,29 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   infoSep: { width: 1, height: 34, backgroundColor: 'rgba(43,32,53,0.1)' },
+
+  deficitStrip: {
+    flexDirection: 'row',
+    borderRadius: 20,
+    padding: 18,
+    marginTop: 12,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    shadowColor: '#D5CDE0',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  deficitRow: { alignItems: 'center', flex: 1 },
+  deficitLabel: {
+    fontSize: 10,
+    fontFamily: 'Montserrat_500Medium',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  deficitValue: { fontSize: 15, fontFamily: 'Montserrat_700Bold', color: colors.textPrimary },
+  deficitSep: { width: 1, height: 36, backgroundColor: 'rgba(43,32,53,0.12)' },
 });

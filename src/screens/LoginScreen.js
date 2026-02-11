@@ -7,11 +7,13 @@ import {
   Platform,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { colors } from '../styles/colors';
 import { supabase } from '../services/supabase';
+import { getAuthErrorMessage } from '../utils/authMessages';
 
 export const LoginScreen = ({ onLoginSuccess, onSignUpPress }) => {
   const [email, setEmail] = useState('');
@@ -46,7 +48,7 @@ export const LoginScreen = ({ onLoginSuccess, onSignUpPress }) => {
       onLoginSuccess(!!userData);
     } catch (error) {
       console.log('Ошибка входа:', error);
-      Alert.alert('Ошибка входа', error.message || 'Неверный email или пароль');
+      Alert.alert('Ошибка входа', getAuthErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -64,7 +66,7 @@ export const LoginScreen = ({ onLoginSuccess, onSignUpPress }) => {
       if (error) throw error;
       Alert.alert('Письмо отправлено', 'Проверьте email для восстановления пароля');
     } catch (error) {
-      Alert.alert('Ошибка', error.message);
+      Alert.alert('Ошибка', getAuthErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -74,7 +76,7 @@ export const LoginScreen = ({ onLoginSuccess, onSignUpPress }) => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      enabled={true}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       {/* Розовый hero сверху */}
       <View style={styles.heroBlock}>
@@ -83,10 +85,14 @@ export const LoginScreen = ({ onLoginSuccess, onSignUpPress }) => {
         <Text style={styles.heroSubtitle}>к вашему личному трекеру</Text>
       </View>
 
-      {/* Белая форма снизу с закруглёнными верхними углами */}
-      <View style={styles.formSheet}>
+      {/* Белая форма с возможностью скролла при открытой клавиатуре */}
+      <ScrollView
+        style={styles.formSheet}
+        contentContainerStyle={styles.formSheetContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.formSheetHandle} />
-
         <Text style={styles.formTitle}>Войти в аккаунт</Text>
 
         <Input
@@ -116,7 +122,7 @@ export const LoginScreen = ({ onLoginSuccess, onSignUpPress }) => {
           title="Войти"
           onPress={handleLogin}
           loading={loading}
-          disabled={!email || !password}
+          disabled={!email || !password || loading}
           style={styles.loginButton}
         />
 
@@ -132,7 +138,7 @@ export const LoginScreen = ({ onLoginSuccess, onSignUpPress }) => {
             <Text style={styles.signupLink}>Зарегистрироваться</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -167,19 +173,21 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
-  // Белый sheet снизу
   formSheet: {
     flex: 1,
     backgroundColor: colors.cardBackground,
     borderTopLeftRadius: 36,
     borderTopRightRadius: 36,
-    paddingHorizontal: 28,
-    paddingTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 8,
+  },
+  formSheetContent: {
+    paddingHorizontal: 28,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
   formSheetHandle: {
     width: 44,

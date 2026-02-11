@@ -6,24 +6,12 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FAFBFC"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.weighttracker.app"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FAFBFC"
-      },
-      "package": "com.weighttracker.app"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "splash": {"image": "./assets/splash-icon.png", "resizeMode": "contain", "backgroundColor": "#FAFBFC"},
+    "ios": {"supportsTablet": true, "bundleIdentifier": "com.weighttracker.app"},
+    "android": {"adaptiveIcon": {"foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#FAFBFC"}, "package": "com.weighttracker.app"},
+    "web": {"favicon": "./assets/favicon.png"},
+    "plugins": ["react-native-iap/app.plugin.js"],
+    "runtimeVersion": {"policy": "appVersion"},
+    "updates": {"checkAutomatically": "ON_LOAD", "fallbackToCacheTimeout": 0}
   }
 }

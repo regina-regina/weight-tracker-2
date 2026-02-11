@@ -13,6 +13,7 @@ export const MainScreen = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddEntry, setShowAddEntry] = useState(false);
   const [editEntry, setEditEntry] = useState(null);
+  // refreshKey меняется после сохранения → дочерние экраны пересоздаются и делают re-fetch
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleAddEntry = () => {
@@ -30,14 +31,12 @@ export const MainScreen = () => {
     setEditEntry(null);
   };
 
+  // После успешного сохранения обновляем все экраны
   const handleSaved = useCallback(() => {
     setShowAddEntry(false);
     setEditEntry(null);
     setRefreshKey((prev) => prev + 1);
   }, []);
-
-  // Показывать кнопку + в header только на dashboard и history
-  const showPlusButton = activeTab === 'dashboard' || activeTab === 'history';
 
   const tabs = [
     { key: 'dashboard', label: 'Главная', icon: 'home', iconOutline: 'home-outline' },
@@ -49,42 +48,34 @@ export const MainScreen = () => {
   const renderScreen = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardScreen key={`d-${refreshKey}`} onAddEntry={handleAddEntry} />;
+        return <DashboardScreen key={`dashboard-${refreshKey}`} onAddEntry={handleAddEntry} />;
       case 'history':
-        return <HistoryScreen key={`h-${refreshKey}`} onEditEntry={handleEditEntry} onAddEntry={handleAddEntry} />;
+        return <HistoryScreen key={`history-${refreshKey}`} onEditEntry={handleEditEntry} />;
       case 'charts':
-        return <ChartsScreen key={`c-${refreshKey}`} />;
+        return <ChartsScreen key={`charts-${refreshKey}`} />;
       case 'profile':
-        return <ProfileScreen key={`p-${refreshKey}`} />;
+        return <ProfileScreen key={`profile-${refreshKey}`} />;
       default:
-        return <DashboardScreen key={`d-${refreshKey}`} onAddEntry={handleAddEntry} />;
+        return <DashboardScreen key={`dashboard-${refreshKey}`} onAddEntry={handleAddEntry} />;
     }
-  };
-
-  // Заголовки для каждой вкладки
-  const tabTitles = {
-    dashboard: 'Главная',
-    history: 'История',
-    charts: 'Графики',
-    profile: 'Профиль',
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Общий header с названием и кнопкой + */}
-      <View style={styles.appHeader}>
-        <Text style={styles.appHeaderTitle}>{tabTitles[activeTab]}</Text>
-        {showPlusButton && (
-          <TouchableOpacity style={styles.plusButton} onPress={handleAddEntry} activeOpacity={0.75}>
-            <Ionicons name="add" size={22} color="#FFFFFF" />
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Контент */}
       <View style={styles.content}>{renderScreen()}</View>
 
-      {/* Modal добавления */}
+      {/* FAB — кнопка добавления записи (всегда видна) */}
+      {activeTab !== 'profile' && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={handleAddEntry}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="add" size={32} color="#FFFFFF" />
+        </TouchableOpacity>
+      )}
+
+      {/* Modal добавления/редактирования */}
       <Modal
         visible={showAddEntry}
         animationType="slide"
@@ -104,16 +95,15 @@ export const MainScreen = () => {
               style={styles.tabItem}
               onPress={() => setActiveTab(tab.key)}
             >
-              <View style={[styles.tabIconWrap, isActive && styles.tabIconWrapActive]}>
-                <Ionicons
-                  name={isActive ? tab.icon : tab.iconOutline}
-                  size={22}
-                  color={isActive ? colors.tabBarActive : colors.tabBarInactive}
-                />
-              </View>
+              <Ionicons
+                name={isActive ? tab.icon : tab.iconOutline}
+                size={24}
+                color={isActive ? colors.tabBarActive : colors.tabBarInactive}
+              />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
                 {tab.label}
               </Text>
+              {isActive && <View style={styles.tabActiveIndicator} />}
             </TouchableOpacity>
           );
         })}
@@ -127,81 +117,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  content: {
+    flex: 1,
+  },
 
-  // App header
-  appHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 22,
-    paddingTop: 8,
-    paddingBottom: 12,
-    backgroundColor: colors.background,
-  },
-  appHeaderTitle: {
-    fontSize: 26,
-    fontWeight: '700',
-    fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
-  },
-  plusButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+  // FAB
+  fab: {
+    position: 'absolute',
+    bottom: 90,
+    right: 24,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-
-  content: {
-    flex: 1,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 10,
   },
 
   // Tab Bar
   tabBar: {
     flexDirection: 'row',
     backgroundColor: colors.tabBarBackground,
-    height: 76,
-    paddingBottom: 14,
-    paddingTop: 10,
-    paddingHorizontal: 12,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    height: 80,
+    paddingBottom: 16,
+    paddingTop: 12,
+    paddingHorizontal: 8,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    elevation: 10,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 12,
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-  },
-  tabIconWrap: {
-    width: 40,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabIconWrapActive: {
-    backgroundColor: '#FFF0EC',  // лёгкий coral tint
+    position: 'relative',
   },
   tabLabel: {
     fontSize: 11,
     fontFamily: 'Montserrat_500Medium',
     color: colors.tabBarInactive,
-    letterSpacing: 0.2,
+    fontWeight: '500',
+    letterSpacing: 0.3,
+    marginTop: 2,
   },
   tabLabelActive: {
     fontFamily: 'Montserrat_600SemiBold',
     color: colors.tabBarActive,
+    fontWeight: '600',
+  },
+  tabActiveIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    width: 24,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: colors.tabBarActive,
   },
 });
