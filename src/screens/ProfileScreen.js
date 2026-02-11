@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 import { activityLevels, paces, genders } from '../utils/constants';
 
@@ -144,7 +144,7 @@ export const ProfileScreen = () => {
         </View>
 
         {/* Основные данные */}
-        <Card color={colors.pastelPink}>
+        <Card color={AppColors.softBlush}>
           <Text style={styles.cardTitle}>👤 Основные данные</Text>
 
           <Text style={styles.label}>Пол</Text>
@@ -167,13 +167,13 @@ export const ProfileScreen = () => {
         </Card>
 
         {/* Цели */}
-        <Card color={colors.pastelMint}>
+        <Card color={AppColors.sageMintLight}>
           <Text style={styles.cardTitle}>🎯 Цели</Text>
           <Input label="Целевой вес (кг)" value={goalWeight} onChangeText={setGoalWeight} keyboardType="numeric" />
         </Card>
 
         {/* Активность */}
-        <Card color={colors.pastelLavender}>
+        <Card color={AppColors.beigeWarm}>
           <Text style={styles.cardTitle}>🏃 Уровень активности</Text>
           {activityLevels.map((level) => (
             <TouchableOpacity
@@ -197,7 +197,7 @@ export const ProfileScreen = () => {
         </Card>
 
         {/* Темп */}
-        <Card color={colors.pastelPeach}>
+        <Card color={AppColors.peachyLight}>
           <Text style={styles.cardTitle}>⚡ Темп похудения</Text>
           {paces.map((p) => (
             <TouchableOpacity
@@ -234,19 +234,19 @@ export const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: AppColors.screenBackground,
   },
   headerContainer: {
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 20,
-    backgroundColor: colors.background,
+    backgroundColor: AppColors.screenBackground,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.deepSea,
     letterSpacing: 0.3,
   },
   scrollView: {
@@ -279,15 +279,11 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: colors.pastelPink,
+    backgroundColor: AppColors.softBlush,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    ...AppColors.cardShadow,
   },
   avatarText: {
     fontSize: 36,
@@ -295,22 +291,20 @@ const styles = StyleSheet.create({
   avatarEmail: {
     fontSize: 14,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
+    color: '#95A5A6',
   },
-
-  // Card titles
   cardTitle: {
     fontSize: 18,
-    fontWeight: '700',
-    fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    fontWeight: '600',
+    fontFamily: 'Montserrat_600SemiBold',
+    color: AppColors.deepSea,
     marginBottom: 16,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    color: colors.textSecondary,
+    color: AppColors.profileFieldLabel,
     marginBottom: 12,
   },
 
@@ -324,47 +318,37 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: AppColors.white,
     borderWidth: 2,
-    borderColor: '#F0F4F8',
+    borderColor: 'transparent',
     alignItems: 'center',
   },
   optionSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primary,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    borderColor: AppColors.coralAccent,
+    backgroundColor: AppColors.coralAccent,
+    ...AppColors.cardShadow,
   },
   optionText: {
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    color: colors.textPrimary,
+    color: AppColors.profileFieldLabel,
   },
   optionTextSelected: {
-    color: '#FFFFFF',
+    color: AppColors.white,
   },
-
-  // List options
   listOption: {
     padding: 18,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: AppColors.white,
     marginBottom: 12,
     borderWidth: 2,
-    borderColor: '#F0F4F8',
+    borderColor: 'transparent',
   },
   listOptionSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.pastelPink,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: AppColors.coralAccent,
+    backgroundColor: AppColors.profilePaceActiveBg,
+    ...AppColors.cardShadow,
   },
   listOptionInner: {
     flexDirection: 'row',
@@ -375,24 +359,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
     marginBottom: 4,
   },
   listOptionDescription: {
     fontSize: 14,
     fontFamily: 'Montserrat_400Regular',
-    color: colors.textSecondary,
+    color: AppColors.bmrStripSub,
   },
   checkmark: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: colors.primary,
+    backgroundColor: AppColors.coralAccent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkmarkIcon: {
-    color: '#FFFFFF',
+    color: AppColors.white,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -401,14 +385,12 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
   },
-
-  // Logout section
   logoutSection: {
     marginTop: 8,
   },
   logoutDivider: {
     height: 1,
-    backgroundColor: '#F0F4F8',
+    backgroundColor: AppColors.navTopBorder,
     marginBottom: 16,
   },
 

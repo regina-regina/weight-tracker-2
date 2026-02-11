@@ -15,7 +15,7 @@ import { AppIcon } from '../components/AppIcon';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 
 export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
@@ -231,11 +231,11 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
             {isEditing ? 'Редактировать запись' : 'Добавить запись'}
           </Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <AppIcon name="close" size={28} color={colors.textPrimary} />
+            <AppIcon name="close" size={28} color={AppColors.textPrimary} />
           </TouchableOpacity>
         </View>
 
-        <Card color={colors.pastelPink}>
+        <Card color={AppColors.softBlush}>
           <Text style={styles.cardTitle}>Основные измерения</Text>
 
           <View style={styles.inputContainer}>
@@ -263,7 +263,7 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
             ) : (
               <TouchableOpacity style={styles.dateInput} onPress={showDatePicker}>
                 <Text style={styles.dateText}>{formatDateDisplay(date)}</Text>
-                <AppIcon name="calendar-outline" size={20} color={colors.textSecondary} />
+                <AppIcon name="calendar-outline" size={20} color={AppColors.textSecondary} />
               </TouchableOpacity>
             )}
           </View>
@@ -292,7 +292,7 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
                     onChange={handleDateChange}
                     maximumDate={new Date()}
                     locale="ru-RU"
-                    textColor={colors.textPrimary}
+                    textColor={AppColors.textPrimary}
                   />
                 </View>
               </View>
@@ -318,7 +318,7 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
           />
         </Card>
 
-        <Card color={colors.pastelMint}>
+        <Card color={AppColors.sageMintLight}>
           <Text style={styles.cardTitle}>Дополнительные измерения</Text>
           <Text style={styles.subtitle}>
             Для более точного расчета процента жира
@@ -357,7 +357,7 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
           />
         </Card>
 
-        <Card color={colors.pastelBlue}>
+        <Card color={AppColors.blueLight}>
           <Text style={styles.cardTitle}>Активные калории</Text>
           <Text style={styles.subtitle}>
             Необязательно. Калории сверх базового обмена (тренировка, активность)
@@ -396,7 +396,7 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: AppColors.background,
   },
   scrollView: {
     flex: 1,
@@ -423,20 +423,20 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
     flex: 1,
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 13,
     fontFamily: 'Montserrat_400Regular',
-    color: colors.textSecondary,
+    color: AppColors.textSecondary,
     marginBottom: 16,
   },
   inputContainer: {
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
     marginBottom: 10,
     letterSpacing: 0.2,
   },
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
   },
   dateInputRow: {
     flexDirection: 'row',
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: colors.cardBackground,
+    backgroundColor: AppColors.cardBackground,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingBottom: 34,
@@ -498,16 +498,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.tabBarBorder,
+    borderBottomColor: AppColors.tabBarBorder,
   },
   modalButton: {
     fontSize: 16,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
+    color: AppColors.textSecondary,
   },
   modalButtonPrimary: {
     fontFamily: 'Montserrat_600SemiBold',
-    color: colors.primary,
+    color: AppColors.primary,
   },
   deleteButton: {
     marginTop: 16,

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 import { calculateBodyFat } from '../utils/calculations';
 
@@ -131,36 +131,40 @@ export const ChartsScreen = () => {
 
   const formatKgLabel = (v) => Number(v).toFixed(1);
 
-  const chartBase = (color, opts = {}) => ({
-    width: opts.width ?? screenWidth - 64,
-    height: 180,
-    curved: true,
-    areaChart: true,
-    isAnimated: true,
-    animationDuration: 900,
-    startFillColor: color,
-    startOpacity: 0.35,
-    endFillColor: color,
-    endOpacity: 0.05,
-    color,
-    thickness: 3,
-    dataPointsColor: color,
-    dataPointsRadius: 5,
-    initialSpacing: 10,
-    endSpacing: 10,
-    noOfSections: opts.noOfSections ?? 4,
-    maxValue: opts.maxValue,
-    minValue: opts.minValue,
-    yAxisColor: 'transparent',
-    xAxisColor: '#EDE8F0',
-    yAxisTextStyle: styles.axisText,
-    xAxisLabelTextStyle: styles.axisText,
-    yAxisLabelFormatter: opts.yAxisLabelFormatter ?? formatKgLabel,
-    showVerticalLines: true,
-    rulesColor: '#EDE8F0',
-    rulesType: 'solid',
-    adjustToWidth: !opts.scrollable,
-  });
+  const chartBase = (color, opts = {}) => {
+    const gridColor = opts.gridColor ?? AppColors.chartWeightGrid;
+    const axisColor = opts.axisColor ?? AppColors.chartAxisLabel;
+    return {
+      width: opts.width ?? screenWidth - 64,
+      height: 180,
+      curved: true,
+      areaChart: true,
+      isAnimated: true,
+      animationDuration: 900,
+      startFillColor: color,
+      startOpacity: 0.35,
+      endFillColor: color,
+      endOpacity: 0.05,
+      color,
+      thickness: 3,
+      dataPointsColor: color,
+      dataPointsRadius: 5,
+      initialSpacing: 10,
+      endSpacing: 10,
+      noOfSections: opts.noOfSections ?? 4,
+      maxValue: opts.maxValue,
+      minValue: opts.minValue,
+      yAxisColor: 'transparent',
+      xAxisColor: gridColor,
+      yAxisTextStyle: [styles.axisText, { color: axisColor }],
+      xAxisLabelTextStyle: [styles.axisText, { color: axisColor }],
+      yAxisLabelFormatter: opts.yAxisLabelFormatter ?? formatKgLabel,
+      showVerticalLines: true,
+      rulesColor: gridColor,
+      rulesType: 'solid',
+      adjustToWidth: !opts.scrollable,
+    };
+  };
 
   return (
     <View style={styles.container}>
@@ -174,14 +178,14 @@ export const ChartsScreen = () => {
       >
 
         {/* === ГРАФИК ВЕСА === */}
-        <View style={[styles.chartCard, { backgroundColor: colors.pastelPink }]}>
+        <View style={[styles.chartCard, { backgroundColor: AppColors.softBlush }]}>
           <Text style={styles.chartTitle}>📈 Изменение веса</Text>
           <PeriodSelector period={weightPeriod} setPeriod={setWeightPeriod} options={periodOpts} />
           {weightData.length > 1 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chartScroll} contentContainerStyle={styles.chartScrollContent}>
               <View style={styles.chartBox}>
                 <LineChart
-                  {...chartBase(colors.chartPink, {
+                  {...chartBase(AppColors.coralAccent, {
                     noOfSections: Math.max(2, Math.round((weightMax - weightMin) * 2)),
                     minValue: Math.max(30, weightMin - 1),
                     maxValue: weightMax + 1,
@@ -194,9 +198,9 @@ export const ChartsScreen = () => {
                   yAxisLabelWidth={36}
                   pointerConfig={{
                     pointerStripHeight: 140,
-                    pointerStripColor: colors.textSecondary,
+                    pointerStripColor: AppColors.textSecondary,
                     pointerStripWidth: 1.5,
-                    pointerColor: colors.chartPink,
+                    pointerColor: AppColors.coralAccent,
                     radius: 6,
                     pointerLabelWidth: 94,
                     pointerLabelHeight: 56,
@@ -219,19 +223,19 @@ export const ChartsScreen = () => {
 
         {/* === ГРАФИК % ЖИРА === */}
         {bodyFatData.length > 1 && (
-          <View style={[styles.chartCard, { backgroundColor: colors.pastelMint }]}>
+          <View style={[styles.chartCard, { backgroundColor: AppColors.sageMintLight }]}>
             <Text style={styles.chartTitle}>💪 Процент жира</Text>
             <PeriodSelector period={bodyFatPeriod} setPeriod={setBodyFatPeriod} options={periodOpts} />
             <View style={styles.chartBox}>
               <LineChart
-                {...chartBase(colors.chartMint)}
+                {...chartBase(AppColors.sageMint, { gridColor: AppColors.chartFatGrid, axisColor: AppColors.bmiSub })}
                 data={bodyFatData}
                 spacing={Math.min(52, Math.max(22, (screenWidth - 100) / Math.max(1, bodyFatData.length)))}
                 pointerConfig={{
                   pointerStripHeight: 140,
-                  pointerStripColor: colors.textSecondary,
+                  pointerStripColor: AppColors.textSecondary,
                   pointerStripWidth: 1.5,
-                  pointerColor: colors.chartMint,
+                  pointerColor: AppColors.sageMint,
                   radius: 6,
                   pointerLabelWidth: 94,
                   pointerLabelHeight: 56,
@@ -256,53 +260,47 @@ export const ChartsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: AppColors.screenBackground },
   headerContainer: {
     paddingTop: 16,
     paddingBottom: 8,
     paddingHorizontal: 20,
-    backgroundColor: colors.background,
+    backgroundColor: AppColors.screenBackground,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.deepSea,
     letterSpacing: 0.3,
   },
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: 20, paddingTop: 8 },
 
-  // Skeleton
-  skelChart: { height: 220, borderRadius: 24, backgroundColor: '#EDE8F0', marginBottom: 14 },
+  skelChart: { height: 220, borderRadius: AppColors.cardRadius, backgroundColor: AppColors.cloudCream, marginBottom: 14 },
 
-  // Empty
-  emptyWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, backgroundColor: colors.background },
+  emptyWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, backgroundColor: AppColors.screenBackground },
   emptyEmoji: { fontSize: 52, marginBottom: 16 },
-  emptyTitle: { fontSize: 20, fontWeight: '600', fontFamily: 'Montserrat_600SemiBold', color: colors.textPrimary, marginBottom: 8 },
-  emptySub: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: colors.textSecondary, textAlign: 'center' },
+  emptyTitle: { fontSize: 20, fontWeight: '600', fontFamily: 'Montserrat_600SemiBold', color: AppColors.textPrimary, marginBottom: 8 },
+  emptySub: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: AppColors.textSecondary, textAlign: 'center' },
 
-  // Chart card
   chartCard: {
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: AppColors.cardRadius,
+    padding: 16,
     marginBottom: 14,
-    shadowColor: '#D5CDE0',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    elevation: 3,
+    ...AppColors.cardShadow,
   },
-  chartTitle: { fontSize: 17, fontWeight: '700', fontFamily: 'Montserrat_700Bold', color: colors.textPrimary, marginBottom: 14 },
+  chartTitle: { fontSize: 17, fontWeight: '700', fontFamily: 'Montserrat_700Bold', color: AppColors.deepSea, marginBottom: 14 },
   chartBox: { marginTop: 6, overflow: 'hidden' },
 
-  // Period selector — pill tabs
   periodWrap: {
     flexDirection: 'row',
-    backgroundColor: '#F2ECF5',
+    backgroundColor: AppColors.white,
     borderRadius: 16,
     padding: 3,
     marginBottom: 14,
+    borderWidth: 1,
+    borderColor: AppColors.chartInactiveBorder,
   },
   periodPill: {
     flex: 1,
@@ -311,18 +309,13 @@ const styles = StyleSheet.create({
     borderRadius: 13,
   },
   periodPillActive: {
-    backgroundColor: colors.primary,
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.22,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: AppColors.coralAccent,
+    ...AppColors.fabShadow,
   },
-  periodText: { fontSize: 13, fontFamily: 'Montserrat_500Medium', color: colors.textSecondary },
-  periodTextActive: { fontFamily: 'Montserrat_600SemiBold', color: '#FFFFFF' },
+  periodText: { fontSize: 13, fontFamily: 'Montserrat_500Medium', color: AppColors.chartAxisLabel },
+  periodTextActive: { fontFamily: 'Montserrat_600SemiBold', color: AppColors.white },
 
-  // Axis
-  axisText: { fontSize: 10, fontFamily: 'Montserrat_400Regular', color: colors.textSecondary },
+  axisText: { fontSize: 10, fontFamily: 'Montserrat_400Regular' },
 
   chartScroll: { marginTop: 6 },
   chartScrollContent: { paddingRight: 20 },
@@ -335,8 +328,8 @@ const styles = StyleSheet.create({
     marginLeft: -44,
     marginTop: 4,
   },
-  tooltipVal: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: '#FFFFFF', marginTop: 4 },
+  tooltipVal: { fontSize: 15, fontFamily: 'Montserrat_600SemiBold', color: AppColors.white, marginTop: 4 },
   tooltipDate: { fontSize: 11, fontFamily: 'Montserrat_400Regular', color: '#CCC' },
 
-  noDataText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: colors.textSecondary, textAlign: 'center', marginVertical: 30 },
+  noDataText: { fontSize: 14, fontFamily: 'Montserrat_400Regular', color: AppColors.textSecondary, textAlign: 'center', marginVertical: 30 },
 });

@@ -7,7 +7,7 @@ import { HistoryScreen } from './HistoryScreen';
 import { ChartsScreen } from './ChartsScreen';
 import { ProfileScreen } from './ProfileScreen';
 import { AddEntryScreen } from './AddEntryScreen';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 
 export const MainScreen = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -71,7 +71,7 @@ export const MainScreen = () => {
           onPress={handleAddEntry}
           activeOpacity={0.8}
         >
-          <AppIcon name="add" size={32} color={colors.primary} />
+          <AppIcon name="add" size={32} color={AppColors.white} />
         </TouchableOpacity>
       )}
 
@@ -98,7 +98,7 @@ export const MainScreen = () => {
               <AppIcon
                 name={isActive ? tab.icon : tab.iconOutline}
                 size={24}
-                color={isActive ? colors.tabBarActive : colors.tabBarInactive}
+                color={isActive ? AppColors.coralAccent : AppColors.inactive}
               />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
                 {tab.label}
@@ -114,45 +114,33 @@ export const MainScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: AppColors.screenBackground,
   },
   content: {
     flex: 1,
   },
-
-  // FAB — светлый кружок как фон приложения, плюс акцентным цветом
   fab: {
     position: 'absolute',
     bottom: 90,
     right: 24,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.background,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: AppColors.coralAccent,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.textSecondary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 8,
+    ...AppColors.fabShadow,
     zIndex: 10,
   },
-
-  // Tab Bar
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: colors.tabBarBackground,
+    backgroundColor: AppColors.white,
     height: 80,
     paddingBottom: 16,
     paddingTop: 12,
     paddingHorizontal: 8,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+    borderTopWidth: 1,
+    borderTopColor: AppColors.navTopBorder,
     elevation: 12,
   },
   tabItem: {
@@ -164,15 +152,14 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 11,
-    fontFamily: 'Montserrat_500Medium',
-    color: colors.tabBarInactive,
-    fontWeight: '500',
+    fontFamily: 'Montserrat_400Regular',
+    color: AppColors.inactive,
     letterSpacing: 0.3,
     marginTop: 2,
   },
   tabLabelActive: {
     fontFamily: 'Montserrat_600SemiBold',
-    color: colors.tabBarActive,
+    color: AppColors.coralAccent,
     fontWeight: '600',
   },
 });

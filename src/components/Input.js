@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 
 export const Input = ({
   label,
@@ -33,7 +33,7 @@ export const Input = ({
         onChangeText={handleChange}
         placeholder={placeholder}
         keyboardType={keyboardType === 'numeric' ? 'decimal-pad' : keyboardType}
-        placeholderTextColor={colors.textLight}
+        placeholderTextColor={AppColors.inactive}
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
         autoComplete={autoComplete}
@@ -52,32 +52,28 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
+    color: AppColors.textSecondary,
     marginBottom: 8,
     letterSpacing: 0.3,
   },
   labelFocused: {
-    color: colors.primary,
+    color: AppColors.coralAccent,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: AppColors.white,
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 14,
     fontSize: 16,
     fontFamily: 'Montserrat_400Regular',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
     borderWidth: 1.5,
-    borderColor: '#EDE8F0',
-    shadowColor: '#D5CDE0',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 1,
+    borderColor: AppColors.chartInactiveBorder,
+    ...AppColors.cardShadow,
   },
   inputFocused: {
-    borderColor: colors.primary,
-    shadowColor: colors.primary,
+    borderColor: AppColors.coralAccent,
+    shadowColor: AppColors.coralAccent,
     shadowOpacity: 0.18,
   },
 });

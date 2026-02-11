@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 
 export const Button = ({ title, onPress, style, disabled, loading, variant = 'primary' }) => {
   const isDisabled = Boolean(disabled || loading);
@@ -45,7 +45,7 @@ export const Button = ({ title, onPress, style, disabled, loading, variant = 'pr
     >
       {isLoading ? (
         <ActivityIndicator
-          color={variant === 'primary' || variant === 'danger' ? '#FFFFFF' : colors.primary}
+          color={variant === 'primary' || variant === 'danger' ? AppColors.white : AppColors.coralAccent}
         />
       ) : (
         <Text style={getTextStyle()}>{title}</Text>
@@ -57,20 +57,16 @@ export const Button = ({ title, onPress, style, disabled, loading, variant = 'pr
 const styles = StyleSheet.create({
   // Primary
   button: {
-    backgroundColor: colors.primary,
-    borderRadius: 24,
+    backgroundColor: AppColors.coralAccent,
+    borderRadius: 12,
     padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 58,
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 6,
+    minHeight: 56,
+    ...AppColors.cardShadow,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: AppColors.white,
     fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
@@ -79,15 +75,15 @@ const styles = StyleSheet.create({
 
   // Secondary
   buttonSecondary: {
-    backgroundColor: '#F0F4F8',
-    borderRadius: 24,
+    backgroundColor: AppColors.cloudCream,
+    borderRadius: 12,
     padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 58,
+    minHeight: 56,
   },
   buttonTextSecondary: {
-    color: colors.textSecondary,
+    color: AppColors.textSecondary,
     fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
@@ -97,16 +93,16 @@ const styles = StyleSheet.create({
   // Outline
   buttonOutline: {
     backgroundColor: 'transparent',
-    borderRadius: 24,
+    borderRadius: 12,
     padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 58,
+    minHeight: 56,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: AppColors.coralAccent,
   },
   buttonTextOutline: {
-    color: colors.primary,
+    color: AppColors.coralAccent,
     fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
@@ -115,17 +111,17 @@ const styles = StyleSheet.create({
 
   // Danger
   buttonDanger: {
-    backgroundColor: '#FFF0F0',
-    borderRadius: 24,
+    backgroundColor: AppColors.white,
+    borderRadius: 12,
     padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 58,
-    borderWidth: 2,
-    borderColor: '#FFCDD2',
+    minHeight: 56,
+    borderWidth: 1.5,
+    borderColor: AppColors.softBlush,
   },
   buttonTextDanger: {
-    color: '#FF5252',
+    color: AppColors.warningRed,
     fontSize: 17,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',

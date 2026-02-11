@@ -6,7 +6,7 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 import {
   calculateBMI,
@@ -155,8 +155,6 @@ export const DashboardScreen = ({ onAddEntry }) => {
     return 'Добрый вечер';
   };
 
-  const s = colors.semantic;
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -165,110 +163,101 @@ export const DashboardScreen = ({ onAddEntry }) => {
         refreshControl={<RefreshControl refreshing={Boolean(refreshing)} onRefresh={onRefresh} />}
       >
 
-        {/* Приветствие */}
         <Text style={styles.greeting}>{getGreeting()} 👋</Text>
         <Text style={styles.greetingSub}>Давайте проверим прогресс</Text>
 
-        {/* === HERO карточка — прогресс и цели (фиолетово-персиковая) === */}
-        <View style={[styles.heroCard, { backgroundColor: s.progressHeroBg }, styles.cardShadow]}>
+        {/* Карточка 1: Осталось X кг — coralAccent, текст white */}
+        <View style={[styles.heroCard, styles.cardShadow]}>
           <View style={styles.heroRow}>
             <View>
-              <Text style={[styles.heroLabel, { color: s.progressHeroRemaining }]}>Текущий вес</Text>
+              <Text style={styles.heroLabel}>Текущий вес</Text>
               <View style={styles.heroWeightRow}>
-                <Text style={[styles.heroWeight, { color: s.goalValue }]}>{currentWeight.toFixed(1)}</Text>
-                <Text style={[styles.heroUnit, { color: s.progressHeroRemaining }]}>кг</Text>
+                <Text style={styles.heroWeight}>{currentWeight.toFixed(1)}</Text>
+                <Text style={styles.heroUnit}>кг</Text>
               </View>
             </View>
             <Text style={styles.heroEmoji}>⚖️</Text>
           </View>
-          <View style={[styles.progressBar, { backgroundColor: 'rgba(123,95,184,0.25)' }]}>
-            <View style={[styles.progressFill, { width: `${progressPercent}%`, backgroundColor: s.progressHeroRemaining }]} />
+          <View style={styles.progressBar}>
+            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
           </View>
           <View style={styles.progressLabels}>
-            <Text style={[styles.progressLabel, { color: s.progressHeroRemaining }]}>{initialWeight} кг</Text>
-            <Text style={[styles.progressLabel, { color: s.progressHeroRemaining }]}>🎯 {userData.goal_weight} кг</Text>
+            <Text style={styles.progressLabel}>{initialWeight} кг</Text>
+            <Text style={styles.progressLabel}>🎯 {userData.goal_weight} кг</Text>
           </View>
           {weightToLose > 0 ? (
-            <Text style={[styles.remainingText, { color: s.progressHeroRemaining }]}>Осталось {weightToLose.toFixed(1)} кг</Text>
+            <Text style={styles.remainingText}>Осталось {weightToLose.toFixed(1)} кг</Text>
           ) : (
             <Text style={styles.achievedText}>🎉 Цель достигнута!</Text>
           )}
         </View>
 
-        {/* === 2×2 плитки: ИМТ + Цель === */}
         <View style={styles.tileRow}>
-          <View style={[styles.tile, { backgroundColor: s.bmiBg }, styles.cardShadow]}>
+          <View style={[styles.tile, { backgroundColor: AppColors.sageMintLight }, styles.cardShadow]}>
             <Text style={styles.tileEmoji}>📊</Text>
-            <Text style={[styles.tileLabel, { color: s.bmiLabel }]}>ИМТ</Text>
-            <Text style={[styles.tileValue, { color: s.bmiValue }]}>{bmi.toFixed(1)}</Text>
-            <Text style={[styles.tileSub, { color: s.bmiSub }]}>{bmiCategory}</Text>
+            <Text style={[styles.tileLabel, { color: AppColors.deepSea }]}>ИМТ</Text>
+            <Text style={[styles.tileValue, { color: AppColors.textPrimary }]}>{bmi.toFixed(1)}</Text>
+            <Text style={[styles.tileSub, { color: AppColors.bmiSub }]}>{bmiCategory}</Text>
           </View>
-          <View style={[styles.tile, { backgroundColor: s.goalBg }, styles.cardShadow]}>
+          <View style={[styles.tile, { backgroundColor: AppColors.peachyLight }, styles.cardShadow]}>
             <Text style={styles.tileEmoji}>🎯</Text>
-            <Text style={[styles.tileLabel, { color: s.goalLabel }]}>Цель</Text>
-            <Text style={[styles.tileValue, { color: s.goalValue }]}>{userData.goal_weight.toFixed(1)}</Text>
-            <Text style={[styles.tileSub, { color: s.goalValue }]}>кг</Text>
+            <Text style={[styles.tileLabel, { color: AppColors.goalTitle }]}>Цель</Text>
+            <Text style={[styles.tileValue, { color: AppColors.textPrimary }]}>{userData.goal_weight.toFixed(1)}</Text>
+            <Text style={[styles.tileSub, { color: AppColors.goalTitle }]}>кг</Text>
           </View>
         </View>
 
         <View style={styles.tileRow}>
-          {/* % жира: опциональные данные — нейтральная/розовая гамма по наличию данных */}
-          <View style={[styles.tile, { backgroundColor: (bodyFatPercentage != null && bodyFatPercentage > 0) ? s.fatFilledBg : s.fatEmptyBg }, styles.cardShadow]}>
+          <View style={[styles.tile, { backgroundColor: (bodyFatPercentage != null && bodyFatPercentage > 0) ? AppColors.softBlush : AppColors.cloudCream }, styles.cardShadow]}>
             <Text style={styles.tileEmoji}>{bodyFatPercentage !== null && bodyFatPercentage > 0 ? '💪' : '📝'}</Text>
-            <Text style={[styles.tileLabel, { color: (bodyFatPercentage != null && bodyFatPercentage > 0) ? s.fatFilledSub : s.fatEmptyValue }]}>
+            <Text style={[styles.tileLabel, { color: (bodyFatPercentage != null && bodyFatPercentage > 0) ? AppColors.deepSea : AppColors.textSecondary }]}>
               {bodyFatPercentage !== null && bodyFatPercentage > 0 ? '% жира' : 'Измерения'}
             </Text>
-            <Text style={[styles.tileValue, { color: (bodyFatPercentage != null && bodyFatPercentage > 0) ? s.fatFilledValue : s.fatEmptyValue }]}>
-              {bodyFatPercentage === null
-                ? 'Внести данные'
-                : bodyFatPercentage === 0
-                  ? 'Нет данных'
-                  : bodyFatPercentage.toFixed(1)}
+            <Text style={[styles.tileValue, { color: (bodyFatPercentage != null && bodyFatPercentage > 0) ? AppColors.textPrimary : AppColors.fatEmptyValue }]}>
+              {bodyFatPercentage === null ? 'Внести данные' : bodyFatPercentage === 0 ? 'Нет данных' : bodyFatPercentage.toFixed(1)}
             </Text>
-            <Text style={[styles.tileSub, { color: (bodyFatPercentage != null && bodyFatPercentage > 0) ? s.fatFilledSub : s.fatEmptySub }]}>
+            <Text style={[styles.tileSub, { color: (bodyFatPercentage != null && bodyFatPercentage > 0) ? AppColors.fatFilledSub : AppColors.inactive }]}>
               {bodyFatPercentage !== null && bodyFatPercentage > 0 ? 'По замерам' : 'талия, шея, бёдра'}
             </Text>
           </View>
-          <View style={[styles.tile, { backgroundColor: s.caloriesBg }, styles.cardShadow]}>
+          <View style={[styles.tile, { backgroundColor: AppColors.blueLight }, styles.cardShadow]}>
             <Text style={styles.tileEmoji}>🔥</Text>
-            <Text style={[styles.tileLabel, { color: s.caloriesLabel }]}>Лимит калорий</Text>
-            <Text style={[styles.tileValue, { color: s.caloriesValue }]}>{Math.round(dailyCalories)}</Text>
-            <Text style={[styles.tileSub, { color: s.caloriesLabel }]}>{weightToLose > 0 ? 'дневная норма' : 'поддержание веса'}</Text>
+            <Text style={[styles.tileLabel, { color: AppColors.deepSea }]}>Лимит калорий</Text>
+            <Text style={[styles.tileValue, { color: AppColors.textPrimary }]}>{Math.round(dailyCalories)}</Text>
+            <Text style={[styles.tileSub, { color: AppColors.caloriesSub }]}>{weightToLose > 0 ? 'дневная норма' : 'поддержание веса'}</Text>
           </View>
         </View>
 
-        {/* === Базовый обмен / Общий расход (сине-фиолетовая) === */}
-        <View style={[styles.infoStrip, { backgroundColor: s.bmrStripBg }, styles.cardShadow]}>
+        <View style={[styles.infoStrip, { backgroundColor: AppColors.beigeWarm }, styles.cardShadow]}>
           <View style={styles.infoItem}>
-            <Text style={[styles.infoLabel, { color: s.bmrStripLabel }]} numberOfLines={2} allowFontScaling={false}>Базовый обмен</Text>
-            <Text style={[styles.infoValue, { color: s.bmrStripValue }]}>{Math.round(bmr)}</Text>
-            <Text style={[styles.infoUnit, { color: s.bmrStripLabel }]}>ккал/день</Text>
+            <Text style={[styles.infoLabel, { color: AppColors.bmrStripTitle }]} numberOfLines={2} allowFontScaling={false}>Базовый обмен</Text>
+            <Text style={[styles.infoValue, { color: AppColors.textPrimary }]}>{Math.round(bmr)}</Text>
+            <Text style={[styles.infoUnit, { color: AppColors.bmrStripSub }]}>ккал/день</Text>
           </View>
-          <View style={[styles.infoSep, { backgroundColor: s.bmrStripSep }]} />
+          <View style={[styles.infoSep, { backgroundColor: AppColors.bmrStripDivider }]} />
           <View style={styles.infoItem}>
-            <Text style={[styles.infoLabel, { color: s.bmrStripLabel }]} numberOfLines={2} allowFontScaling={false}>Общий расход</Text>
-            <Text style={[styles.infoValue, { color: s.bmrStripValue }]}>{Math.round(tdee)}</Text>
-            <Text style={[styles.infoUnit, { color: s.bmrStripLabel }]}>ккал/день</Text>
+            <Text style={[styles.infoLabel, { color: AppColors.bmrStripTitle }]} numberOfLines={2} allowFontScaling={false}>Общий расход</Text>
+            <Text style={[styles.infoValue, { color: AppColors.textPrimary }]}>{Math.round(tdee)}</Text>
+            <Text style={[styles.infoUnit, { color: AppColors.bmrStripSub }]}>ккал/день</Text>
           </View>
         </View>
 
-        {/* === Темп / Дефицит / Достижение (жёлтая гамма) === */}
-        <View style={[styles.deficitStrip, { backgroundColor: s.stripProgressBg }, styles.cardShadow]}>
+        <View style={[styles.deficitStrip, { backgroundColor: AppColors.peachyLight }, styles.cardShadow]}>
           <View style={styles.deficitRow}>
-            <Text style={[styles.deficitLabel, { color: s.stripProgressLabel }]} numberOfLines={2}>Темп похудения</Text>
-            <Text style={[styles.deficitValue, { color: s.stripProgressValue }]}>
+            <Text style={[styles.deficitLabel, { color: AppColors.goalTitle }]} numberOfLines={2}>Темп похудения</Text>
+            <Text style={[styles.deficitValue, { color: AppColors.textPrimary }]}>
               {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
             </Text>
           </View>
-          <View style={styles.deficitSep} />
+          <View style={[styles.deficitSep, { backgroundColor: AppColors.deficitStripDivider }]} />
           <View style={styles.deficitRow}>
-            <Text style={[styles.deficitLabel, { color: s.stripProgressLabel }]}>Дефицит</Text>
-            <Text style={[styles.deficitValue, { color: s.stripProgressValue }]}>{weightToLose > 0 ? `${paceDeficits[userData.pace]} ккал` : '—'}</Text>
+            <Text style={[styles.deficitLabel, { color: AppColors.goalTitle }]}>Дефицит</Text>
+            <Text style={[styles.deficitValue, { color: AppColors.textPrimary }]}>{weightToLose > 0 ? `${paceDeficits[userData.pace]} ккал` : '—'}</Text>
           </View>
-          <View style={styles.deficitSep} />
+          <View style={[styles.deficitSep, { backgroundColor: AppColors.deficitStripDivider }]} />
           <View style={styles.deficitRow}>
-            <Text style={[styles.deficitLabel, { color: s.stripProgressLabel }]}>Достижение</Text>
-            <Text style={[styles.deficitValue, { color: s.stripProgressValue }]}>
+            <Text style={[styles.deficitLabel, { color: AppColors.goalTitle }]}>Достижение</Text>
+            <Text style={[styles.deficitValue, { color: AppColors.textPrimary }]}>
               {weightToLose > 0
                 ? (() => {
                     const { weeks } = calculateTimeToGoal(currentWeight, userData.goal_weight, userData.pace);
@@ -285,24 +274,24 @@ export const DashboardScreen = ({ onAddEntry }) => {
         </View>
 
         {showActiveCaloriesStrip && (
-          <View style={[styles.activeCalStrip, { backgroundColor: s.activeCalBg }, styles.cardShadow]}>
+          <View style={[styles.activeCalStrip, { backgroundColor: AppColors.sageMintLight }, styles.cardShadow]}>
             <View style={styles.activeCalRow}>
               <View style={styles.activeCalItem}>
-                <Text style={[styles.activeCalTitle, { color: s.activeCalTitle }]}>Сегодня</Text>
-                <Text style={[styles.activeCalValue, { color: s.activeCalValue }]}>{Math.round(activeToday)}</Text>
+                <Text style={[styles.activeCalTitle, { color: AppColors.deepSea }]}>Сегодня</Text>
+                <Text style={[styles.activeCalValue, { color: AppColors.textPrimary }]}>{Math.round(activeToday)}</Text>
               </View>
-              <View style={[styles.activeCalSep, { backgroundColor: s.activeCalSep }]} />
+              <View style={[styles.activeCalSep, { backgroundColor: AppColors.activeCalDivider }]} />
               <View style={styles.activeCalItem}>
-                <Text style={[styles.activeCalTitle, { color: s.activeCalTitle }]}>Неделя</Text>
-                <Text style={[styles.activeCalValue, { color: s.activeCalValue }]}>{Math.round(activeWeek)}</Text>
+                <Text style={[styles.activeCalTitle, { color: AppColors.deepSea }]}>Неделя</Text>
+                <Text style={[styles.activeCalValue, { color: AppColors.textPrimary }]}>{Math.round(activeWeek)}</Text>
               </View>
-              <View style={[styles.activeCalSep, { backgroundColor: s.activeCalSep }]} />
+              <View style={[styles.activeCalSep, { backgroundColor: AppColors.activeCalDivider }]} />
               <View style={styles.activeCalItem}>
-                <Text style={[styles.activeCalTitle, { color: s.activeCalTitle }]}>Месяц</Text>
-                <Text style={[styles.activeCalValue, { color: s.activeCalValue }]}>{Math.round(activeMonth)}</Text>
+                <Text style={[styles.activeCalTitle, { color: AppColors.deepSea }]}>Месяц</Text>
+                <Text style={[styles.activeCalValue, { color: AppColors.textPrimary }]}>{Math.round(activeMonth)}</Text>
               </View>
             </View>
-            <Text style={[styles.activeCalSubCommon, { color: s.activeCalSub }]}>Активных калорий</Text>
+            <Text style={[styles.activeCalSubCommon, { color: AppColors.activeCalSub }]}>Активных калорий</Text>
           </View>
         )}
 
@@ -313,36 +302,35 @@ export const DashboardScreen = ({ onAddEntry }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: AppColors.screenBackground },
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16 },
 
-  // Skeleton
-  skelHero: { height: 170, borderRadius: colors.cardRadius, backgroundColor: '#EDE8F0', marginBottom: 14 },
+  skelHero: { height: 170, borderRadius: AppColors.cardRadius, backgroundColor: AppColors.cloudCream, marginBottom: 14 },
   skelRow: { flexDirection: 'row', gap: 12, marginBottom: 14 },
-  skelSmall: { height: 130, borderRadius: colors.cardRadius, backgroundColor: '#EDE8F0' },
+  skelSmall: { height: 130, borderRadius: AppColors.cardRadius, backgroundColor: AppColors.cloudCream },
 
-  errorText: { fontSize: 16, color: '#E53935', textAlign: 'center', marginTop: 80, fontFamily: 'Montserrat_400Regular' },
+  errorText: { fontSize: 16, color: AppColors.warningRed, textAlign: 'center', marginTop: 80, fontFamily: 'Montserrat_400Regular' },
 
-  // Greeting
   greeting: {
     fontSize: 24,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
     marginBottom: 2,
   },
   greetingSub: {
     fontSize: 14,
     fontFamily: 'Montserrat_400Regular',
-    color: colors.textSecondary,
+    color: AppColors.textSecondary,
     marginBottom: 20,
   },
 
-  cardShadow: { ...colors.cardShadow },
+  cardShadow: { ...AppColors.cardShadow },
   heroCard: {
-    borderRadius: colors.cardRadius,
-    padding: 22,
+    backgroundColor: AppColors.coralAccent,
+    borderRadius: AppColors.cardRadius,
+    padding: 16,
     marginBottom: 14,
   },
   heroRow: {
@@ -353,8 +341,8 @@ const styles = StyleSheet.create({
   },
   heroLabel: {
     fontSize: 12,
-    fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
+    fontFamily: 'Montserrat_600SemiBold',
+    color: AppColors.white,
     marginBottom: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -364,27 +352,26 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.white,
     lineHeight: 54,
   },
   heroUnit: {
     fontSize: 18,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
+    color: AppColors.white,
   },
   heroEmoji: { fontSize: 40 },
 
-  // Progress
   progressBar: {
     height: 7,
-    backgroundColor: 'rgba(255,255,255,0.55)',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 10,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: AppColors.white,
     borderRadius: 4,
   },
   progressLabels: {
@@ -393,22 +380,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  progressLabel: { fontSize: 13, fontFamily: 'Montserrat_500Medium', color: colors.textSecondary },
-  remainingText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: colors.primary },
-  achievedText: { fontSize: 15, fontFamily: 'Montserrat_700Bold', color: colors.success },
+  progressLabel: { fontSize: 13, fontFamily: 'Montserrat_500Medium', color: AppColors.white },
+  remainingText: { fontSize: 14, fontFamily: 'Montserrat_600SemiBold', color: AppColors.white },
+  achievedText: { fontSize: 15, fontFamily: 'Montserrat_700Bold', color: AppColors.white },
 
   tileRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   tile: {
     flex: 1,
-    borderRadius: colors.cardRadius,
-    padding: 18,
+    borderRadius: AppColors.cardRadius,
+    padding: 16,
     minHeight: 130,
   },
   tileEmoji: { fontSize: 24, marginBottom: 8 },
   tileLabel: {
     fontSize: 11,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -417,21 +403,19 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
   },
-  tileSub: { fontSize: 12, fontFamily: 'Montserrat_400Regular', color: colors.textSecondary, marginTop: 2 },
+  tileSub: { fontSize: 12, fontFamily: 'Montserrat_400Regular', marginTop: 2 },
 
   infoStrip: {
     flexDirection: 'row',
-    borderRadius: colors.cardRadius,
-    padding: 18,
+    borderRadius: AppColors.cardRadius,
+    padding: 16,
     justifyContent: 'space-around',
   },
   infoItem: { alignItems: 'center', flex: 1 },
   infoLabel: {
     fontSize: 10,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -441,20 +425,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
   },
-  infoUnit: {
-    fontSize: 10,
-    fontFamily: 'Montserrat_400Regular',
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  infoSep: { width: 1, height: 34, backgroundColor: 'rgba(43,32,53,0.1)' },
+  infoUnit: { fontSize: 10, fontFamily: 'Montserrat_400Regular', marginTop: 2 },
+  infoSep: { width: 1, height: 34 },
 
   deficitStrip: {
     flexDirection: 'row',
-    borderRadius: colors.cardRadius,
-    padding: 18,
+    borderRadius: AppColors.cardRadius,
+    padding: 16,
     marginTop: 12,
     alignItems: 'center',
     justifyContent: 'space-around',
@@ -463,18 +441,17 @@ const styles = StyleSheet.create({
   deficitLabel: {
     fontSize: 10,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
     textAlign: 'center',
   },
-  deficitValue: { fontSize: 15, fontFamily: 'Montserrat_700Bold', color: colors.textPrimary },
-  deficitSep: { width: 1, height: 36, backgroundColor: 'rgba(43,32,53,0.12)' },
+  deficitValue: { fontSize: 15, fontFamily: 'Montserrat_700Bold' },
+  deficitSep: { width: 1, height: 36 },
 
   activeCalStrip: {
-    borderRadius: colors.cardRadius,
-    padding: 18,
+    borderRadius: AppColors.cardRadius,
+    padding: 16,
     marginTop: 12,
   },
   activeCalRow: {
@@ -486,7 +463,6 @@ const styles = StyleSheet.create({
   activeCalTitle: {
     fontSize: 10,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -495,14 +471,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
   },
   activeCalSubCommon: {
     fontSize: 11,
     fontFamily: 'Montserrat_400Regular',
-    color: colors.textSecondary,
     marginTop: 10,
     textAlign: 'center',
   },
-  activeCalSep: { width: 1, height: 36, backgroundColor: 'rgba(43,32,53,0.12)' },
+  activeCalSep: { width: 1, height: 36 },
 });

@@ -9,13 +9,8 @@ import {
   Alert,
 } from 'react-native';
 import { AppIcon } from '../components/AppIcon';
-import { colors } from '../styles/colors';
+import { AppColors } from '../styles/colors';
 import { supabase } from '../services/supabase';
-
-// Цвета плашек по направлению веса
-const CARD_GOOD = colors.pastelMint;    // вес движется к цели (зелёный оттенок)
-const CARD_NEUTRAL = colors.pastelPeach; // без изменения
-const CARD_BAD = colors.historyBad;   // вес в противоположную сторону от цели (темнее персика)
 
 export const HistoryScreen = ({ onEditEntry }) => {
   const [entries, setEntries] = useState([]);
@@ -103,16 +98,18 @@ export const HistoryScreen = ({ onEditEntry }) => {
     ? userData.current_weight > userData.goal_weight
     : true; // по умолчанию считаем цель — похудение
 
-  const getCardColorByDiff = (diff) => {
-    if (diff === null) return CARD_NEUTRAL;
-    if (diff === 0) return CARD_NEUTRAL;
+  const getCardColor = (diff, hasMeasurements) => {
+    if (hasMeasurements) return AppColors.beigeWarm;
+    if (diff === null) return AppColors.peachyLight;
+    if (diff === 0) return AppColors.peachyLight;
     const good = wantToLose ? diff < 0 : diff > 0;
-    return good ? CARD_GOOD : CARD_BAD;
+    return good ? AppColors.sageMintLight : AppColors.softBlush;
   };
 
   const renderEntry = ({ item, index }) => {
     const diff = getWeightDiff(index);
-    const cardColor = getCardColorByDiff(diff);
+    const hasMeasurements = !!(item.waist || item.hips || item.neck);
+    const cardColor = getCardColor(diff, hasMeasurements);
 
     return (
       <TouchableOpacity
@@ -141,9 +138,9 @@ export const HistoryScreen = ({ onEditEntry }) => {
                 <AppIcon
                   name={diff < 0 ? 'arrow-down' : diff > 0 ? 'arrow-up' : 'remove'}
                   size={16}
-                  color={diff < 0 ? '#4CAF50' : diff > 0 ? '#FF5252' : colors.textSecondary}
+                  color={diff < 0 ? AppColors.successGreen : diff > 0 ? AppColors.warningRed : AppColors.historyNeutral}
                 />
-                <Text style={[styles.diffText, diff < 0 ? styles.diffDown : diff > 0 ? styles.diffUp : styles.diffZero]}>
+                <Text style={[styles.diffText, { color: diff < 0 ? AppColors.successGreen : diff > 0 ? AppColors.warningRed : AppColors.historyNeutral }]}>
                   {diff > 0 ? '+' : ''}{diff.toFixed(1)}
                 </Text>
               </View>
@@ -206,26 +203,26 @@ export const HistoryScreen = ({ onEditEntry }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: AppColors.screenBackground,
   },
   headerContainer: {
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 20,
-    backgroundColor: colors.background,
+    backgroundColor: AppColors.screenBackground,
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.deepSea,
     letterSpacing: 0.3,
     marginBottom: 2,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: 16,
     fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
+    color: '#95A5A6',
   },
 
   // Skeleton
@@ -234,8 +231,8 @@ const styles = StyleSheet.create({
   },
   skeletonCard: {
     height: 90,
-    borderRadius: 24,
-    backgroundColor: '#EEF1F4',
+    borderRadius: AppColors.cardRadius,
+    backgroundColor: AppColors.cloudCream,
     marginBottom: 12,
   },
 
@@ -254,13 +251,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 15,
     fontFamily: 'Montserrat_400Regular',
-    color: colors.textSecondary,
+    color: AppColors.textSecondary,
     textAlign: 'center',
   },
 
@@ -273,14 +270,10 @@ const styles = StyleSheet.create({
 
   // Entry card
   entryCard: {
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: AppColors.cardRadius,
+    padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    ...AppColors.cardShadow,
   },
   entryHeader: {
     flexDirection: 'row',
@@ -291,13 +284,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
-    color: colors.textPrimary,
+    color: AppColors.deepSea,
     marginBottom: 4,
   },
   entryMeasurements: {
     fontSize: 12,
     fontFamily: 'Montserrat_400Regular',
-    color: colors.textSecondary,
+    color: AppColors.bmrStripSub,
   },
   entryRightSide: {
     alignItems: 'flex-end',
@@ -307,10 +300,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
-    color: colors.textPrimary,
+    color: AppColors.textPrimary,
   },
-
-  // Weight diff indicator
   diffContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -319,14 +310,5 @@ const styles = StyleSheet.create({
   diffText: {
     fontSize: 13,
     fontFamily: 'Montserrat_600SemiBold',
-  },
-  diffDown: {
-    color: '#4CAF50',
-  },
-  diffUp: {
-    color: '#FF5252',
-  },
-  diffZero: {
-    color: colors.textSecondary,
   },
 });

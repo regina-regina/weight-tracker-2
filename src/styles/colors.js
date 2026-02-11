@@ -1,79 +1,92 @@
-export const colors = {
-  // Семантическая палитра карточек (приоритет для дашборда)
-  semantic: {
-    progressHeroBg: '#E1D4F7',
-    progressHeroRemaining: '#7B5FB8',
-    goalBg: '#FFE8CC',
-    goalIcon: '#FF9F43',
-    goalLabel: '#B8772B',
-    goalValue: '#2D3436',
-    stripProgressBg: '#FFEAA7',
-    stripProgressLabel: '#B8872B',
-    stripProgressValue: '#2D3436',
-    bmiBg: '#C8E6D0',
-    bmiIcon: '#00B894',
-    bmiLabel: '#2D8653',
-    bmiValue: '#2D3436',
-    bmiSub: '#5FA878',
-    caloriesBg: '#B8E0F0',
-    caloriesIcon: '#0984E3',
-    caloriesLabel: '#2C6E99',
-    caloriesValue: '#2D3436',
-    bmrStripBg: '#D4C5F0',
-    bmrStripLabel: '#6C5B9D',
-    bmrStripValue: '#2D3436',
-    bmrStripSep: '#B8A8E0',
-    activeCalBg: '#CCE8D8',
-    activeCalTitle: '#2D8653',
-    activeCalValue: '#2D3436',
-    activeCalSub: '#5FA878',
-    activeCalSep: '#B8D8C8',
-    fatEmptyBg: '#F0F0F2',
-    fatEmptyIcon: '#B2BEC3',
-    fatEmptyValue: '#636E72',
-    fatEmptySub: '#95A5A6',
-    fatFilledBg: '#FFE0E8',
-    fatFilledIcon: '#FD79A8',
-    fatFilledValue: '#2D3436',
-    fatFilledSub: '#B85577',
-  },
+/**
+ * Палитра "Soft Dietitian" — единая семантическая система цветов приложения.
+ * Использование: import { AppColors } from '../styles/colors';
+ */
+
+export const AppColors = {
+  // Основные цвета
+  deepSea: '#3D6B7D',
+  sageMint: '#8AB5A8',
+  peachyGlow: '#EDB89A',
+  softBlush: '#F4D5D5',
+  cloudCream: '#F5F1E8',
+  coralAccent: '#E89A7D',
+  white: '#FFFFFF',
+
+  // Светлые вариации (фоны карточек)
+  sageMintLight: '#D4E8E3',
+  peachyLight: '#F9E8DC',
+  blueLight: '#C8DBE0',
+  beigeWarm: '#E8E0D8',
+  screenBackground: '#FDFCFA',
+
+  // Семантические
+  successGreen: '#5A9B8A',
+  warningRed: '#D87A7A',
+  textPrimary: '#2D3436',
+  textSecondary: '#636E72',
+  inactive: '#B2BEC3',
+
+  // Специфичные подписи/акценты
+  bmiSub: '#6B8E84',
+  goalTitle: '#8B5A3C',
+  fatEmptyValue: '#95A5A6',
+  fatFilledIcon: '#E8A4B8',
+  fatFilledSub: '#B85577',
+  caloriesSub: '#5A7B8A',
+  caloriesIcon: '#7CA8B8',
+  bmrStripTitle: '#6B5E52',
+  bmrStripSub: '#8B7D72',
+  bmrStripDivider: '#D4C8BC',
+  deficitStripDivider: '#EDD4C0',
+  activeCalSub: '#6B8E84',
+  activeCalDivider: '#C0DED8',
+  historyNeutral: '#8B7D72',
+
+  // Графики
+  chartInactiveBorder: '#E8D8D8',
+  chartWeightGrid: '#F0E5E5',
+  chartFatGrid: '#C8E0DB',
+  chartAxisLabel: '#8B7D72',
+
+  // Профиль
+  profilePaceIcon: '#D8934A',
+  profilePaceActiveBg: '#FFF5EF',
+  profileFieldLabel: '#8B6B70',
+  profileActivityIcon: '#9B8B7A',
+
+  // Навигация
+  navTopBorder: '#F0F0F0',
+  tabBarBorder: '#F0F0F0',
+  cardBackground: '#FFFFFF',
+
+  // Тени и общие стили
+  cardRadius: 16,
   cardShadow: {
-    shadowColor: '#000000',
+    shadowColor: '#3D6B7D',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
   },
-  cardRadius: 16,
+  fabShadow: {
+    shadowColor: '#E89A7D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
 
-  pastelPink: '#FFD4E8',
-  pastelMint: '#C5F0E3',
-  pastelLavender: '#E0D4FF',
-  pastelPeach: '#FFE0CB',
-  pastelBeige: '#F5EFE7',
-  pastelBlue: '#CDE3FF',
-  pastelCream: '#FFF8F0',
-  pastelYellow: '#FFF3D4',
-  pastelCoral: '#FFCDC7',
-  pastelSage: '#D5E5D7',
-  historyBad: '#E0A8A3',
-  background: '#FFF5F7',
-  cardBackground: '#FFFFFF',
-  textPrimary: '#2B3A48',
-  textSecondary: '#8C97A3',
-  textLight: '#B8C2CC',
-  primary: '#FF6B9D',
-  primaryDark: '#E85883',
-  accent: '#FF8FAB',
-  success: '#7FD9C1',
-  warning: '#FFB84D',
+  // Алиасы для логина/онбординга/подписок/навигации
+  accent: '#E89A7D',
+  textLight: '#B2BEC3',
+  success: '#5A9B8A',
+  primary: '#E89A7D',
+  background: '#FDFCFA',
+  tabBarActive: '#E89A7D',
+  tabBarInactive: '#B2BEC3',
   tabBarBackground: '#FFFFFF',
-  tabBarActive: '#FF6B9D',
-  tabBarInactive: '#C5CFD9',
-  tabBarBorder: '#F0F4F8',
-  chartPink: '#FFB4D0',
-  chartMint: '#95E1D3',
-  chartLavender: '#C8B4E8',
-  chartBlue: '#9FC8E5',
-  chartPeach: '#FFCBA4',
+  tileMint: '#D4E8E3',
 };
+
+export const colors = AppColors;
