@@ -1,5 +1,51 @@
 export const colors = {
-  // Очень мягкие пастельные цвета как в референсах
+  // Семантическая палитра карточек (приоритет для дашборда)
+  semantic: {
+    progressHeroBg: '#E1D4F7',
+    progressHeroRemaining: '#7B5FB8',
+    goalBg: '#FFE8CC',
+    goalIcon: '#FF9F43',
+    goalLabel: '#B8772B',
+    goalValue: '#2D3436',
+    stripProgressBg: '#FFEAA7',
+    stripProgressLabel: '#B8872B',
+    stripProgressValue: '#2D3436',
+    bmiBg: '#C8E6D0',
+    bmiIcon: '#00B894',
+    bmiLabel: '#2D8653',
+    bmiValue: '#2D3436',
+    bmiSub: '#5FA878',
+    caloriesBg: '#B8E0F0',
+    caloriesIcon: '#0984E3',
+    caloriesLabel: '#2C6E99',
+    caloriesValue: '#2D3436',
+    bmrStripBg: '#D4C5F0',
+    bmrStripLabel: '#6C5B9D',
+    bmrStripValue: '#2D3436',
+    bmrStripSep: '#B8A8E0',
+    activeCalBg: '#CCE8D8',
+    activeCalTitle: '#2D8653',
+    activeCalValue: '#2D3436',
+    activeCalSub: '#5FA878',
+    activeCalSep: '#B8D8C8',
+    fatEmptyBg: '#F0F0F2',
+    fatEmptyIcon: '#B2BEC3',
+    fatEmptyValue: '#636E72',
+    fatEmptySub: '#95A5A6',
+    fatFilledBg: '#FFE0E8',
+    fatFilledIcon: '#FD79A8',
+    fatFilledValue: '#2D3436',
+    fatFilledSub: '#B85577',
+  },
+  cardShadow: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardRadius: 16,
+
   pastelPink: '#FFD4E8',
   pastelMint: '#C5F0E3',
   pastelLavender: '#E0D4FF',
@@ -10,32 +56,21 @@ export const colors = {
   pastelYellow: '#FFF3D4',
   pastelCoral: '#FFCDC7',
   pastelSage: '#D5E5D7',
-  /** Красная плашка в истории (вес не в ту сторону) — приглушённый красный для контраста текста */
   historyBad: '#E0A8A3',
-  
-  // Фоновые цвета - розоватые как в референсах
   background: '#FFF5F7',
   cardBackground: '#FFFFFF',
-  
-  // Текст - темный и контрастный
   textPrimary: '#2B3A48',
   textSecondary: '#8C97A3',
   textLight: '#B8C2CC',
-  
-  // Акцентные цвета - яркие кнопки
   primary: '#FF6B9D',
   primaryDark: '#E85883',
   accent: '#FF8FAB',
   success: '#7FD9C1',
   warning: '#FFB84D',
-  
-  // Навигация - минималистичная
   tabBarBackground: '#FFFFFF',
   tabBarActive: '#FF6B9D',
   tabBarInactive: '#C5CFD9',
   tabBarBorder: '#F0F4F8',
-  
-  // Графики - сочные но мягкие
   chartPink: '#FFB4D0',
   chartMint: '#95E1D3',
   chartLavender: '#C8B4E8',
