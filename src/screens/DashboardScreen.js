@@ -22,6 +22,7 @@ import {
 export const DashboardScreen = ({ onAddEntry }) => {
   const [userData, setUserData] = useState(null);
   const [latestEntry, setLatestEntry] = useState(null);
+  const [latestEntryWithMeasurements, setLatestEntryWithMeasurements] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -37,8 +38,15 @@ export const DashboardScreen = ({ onAddEntry }) => {
       const { data: entries } = await supabase
         .from('entries').select('*').eq('user_id', user.id)
         .order('date', { ascending: false }).limit(1);
-
       if (entries && entries.length > 0) setLatestEntry(entries[0]);
+
+      const { data: entriesForFat } = await supabase
+        .from('entries').select('*').eq('user_id', user.id)
+        .order('date', { ascending: false }).limit(50);
+      const withMeasurements = (entriesForFat || []).find(
+        (e) => e.waist && e.neck && (userProfile?.gender === 'male' || e.hips)
+      );
+      setLatestEntryWithMeasurements(withMeasurements || null);
     } catch (error) {
       console.error('Ошибка загрузки данных:', error);
     } finally {
@@ -89,9 +97,10 @@ export const DashboardScreen = ({ onAddEntry }) => {
   const bmiCategory = getBMICategory(bmi);
 
   let bodyFatPercentage = null;
-  if (latestEntry && latestEntry.waist && latestEntry.neck) {
+  if (latestEntryWithMeasurements) {
+    const e = latestEntryWithMeasurements;
     bodyFatPercentage = calculateBodyFat(
-      userData.gender, latestEntry.waist, latestEntry.neck, userData.height, latestEntry.hips
+      userData.gender, e.waist, e.neck, userData.height, e.hips
     );
   }
 
@@ -180,41 +189,41 @@ export const DashboardScreen = ({ onAddEntry }) => {
         </View>
 
         <View style={styles.tileRow}>
-          {/* Процент жира в теле */}
+          {/* Процент жира по последним замерам (абсолютная величина) */}
           <View style={[styles.tile, { backgroundColor: bodyFatPercentage !== null ? colors.pastelCoral : colors.pastelSage }]}>
             <Text style={styles.tileEmoji}>{bodyFatPercentage !== null ? '💪' : '📝'}</Text>
             <Text style={styles.tileLabel}>{bodyFatPercentage !== null ? 'Жир в теле' : 'Измерения'}</Text>
             <Text style={styles.tileValue}>{bodyFatPercentage !== null ? `${bodyFatPercentage.toFixed(1)} %` : '—'}</Text>
-            <Text style={styles.tileSub}>{bodyFatPercentage !== null ? 'процент от веса' : 'талия, шея, бёдра'}</Text>
+            <Text style={styles.tileSub}>{bodyFatPercentage !== null ? 'по последним замерам' : 'талия, шея, бёдра'}</Text>
           </View>
 
-          {/* Калории */}
+          {/* Калории — норма для цели */}
           <View style={[styles.tile, { backgroundColor: colors.pastelBlue }]}>
             <Text style={styles.tileEmoji}>🔥</Text>
-            <Text style={styles.tileLabel}>Калории</Text>
+            <Text style={styles.tileLabel}>Калории в день</Text>
             <Text style={styles.tileValue}>{Math.round(dailyCalories)}</Text>
-            <Text style={styles.tileSub}>в день</Text>
+            <Text style={styles.tileSub}>{weightToLose > 0 ? 'норма для похудения' : 'поддержание веса'}</Text>
           </View>
         </View>
 
-        {/* === Обмен в покое / суточный расход / темп === */}
+        {/* === Обмен / расход / темп === */}
         <View style={[styles.infoStrip, { backgroundColor: colors.pastelLavender }]}>
           <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Обмен в покое</Text>
+            <Text style={styles.infoLabel}>Обмен</Text>
             <Text style={styles.infoValue}>{Math.round(bmr)}</Text>
-            <Text style={styles.infoUnit}>ккал</Text>
+            <Text style={styles.infoUnit}>ккал/день</Text>
           </View>
           <View style={styles.infoSep} />
           <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Расход за день</Text>
+            <Text style={styles.infoLabel}>Расход</Text>
             <Text style={styles.infoValue}>{Math.round(tdee)}</Text>
-            <Text style={styles.infoUnit}>ккал</Text>
+            <Text style={styles.infoUnit}>ккал/день</Text>
           </View>
           <View style={styles.infoSep} />
           <View style={styles.infoItem}>
             <Text style={styles.infoLabel}>Темп</Text>
             <Text style={styles.infoValue}>
-              {userData.pace === 'fast' ? 'Быстрый' : userData.pace === 'optimal' ? 'Оптимальный' : 'Медленный'}
+              {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
             </Text>
           </View>
         </View>
