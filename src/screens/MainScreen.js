@@ -71,7 +71,7 @@ export const MainScreen = () => {
           onPress={handleAddEntry}
           activeOpacity={0.8}
         >
-          <AppIcon name="add" size={32} color="#FFFFFF" />
+          <AppIcon name="add" size={32} color={colors.primary} />
         </TouchableOpacity>
       )}
 
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // FAB
+  // FAB — светлый кружок как фон приложения, плюс акцентным цветом
   fab: {
     position: 'absolute',
     bottom: 90,
@@ -128,12 +128,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
+    shadowColor: colors.textSecondary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
     shadowRadius: 12,
     elevation: 8,
     zIndex: 10,

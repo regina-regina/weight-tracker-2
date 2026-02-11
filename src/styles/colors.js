@@ -10,6 +10,8 @@ export const colors = {
   pastelYellow: '#FFF3D4',
   pastelCoral: '#FFCDC7',
   pastelSage: '#D5E5D7',
+  /** Красная плашка в истории (вес не в ту сторону) — темнее, чтобы не путать с нейтральным персиком */
+  historyBad: '#E89590',
   
   // Фоновые цвета - розоватые как в референсах
   background: '#FFF5F7',

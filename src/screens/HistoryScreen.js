@@ -15,7 +15,7 @@ import { supabase } from '../services/supabase';
 // Цвета плашек по направлению веса
 const CARD_GOOD = colors.pastelMint;    // вес движется к цели (зелёный оттенок)
 const CARD_NEUTRAL = colors.pastelPeach; // без изменения
-const CARD_BAD = colors.pastelCoral;   // вес в противоположную сторону от цели
+const CARD_BAD = colors.historyBad;   // вес в противоположную сторону от цели (темнее персика)
 
 export const HistoryScreen = ({ onEditEntry }) => {
   const [entries, setEntries] = useState([]);

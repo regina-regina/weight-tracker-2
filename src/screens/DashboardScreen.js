@@ -194,17 +194,17 @@ export const DashboardScreen = ({ onAddEntry }) => {
           {/* Процент жира по последним замерам (абсолютная величина) */}
           <View style={[styles.tile, { backgroundColor: bodyFatPercentage !== null ? colors.pastelCoral : colors.pastelSage }]}>
             <Text style={styles.tileEmoji}>{bodyFatPercentage !== null ? '💪' : '📝'}</Text>
-            <Text style={styles.tileLabel}>{bodyFatPercentage !== null ? 'Жир в теле' : 'Измерения'}</Text>
-            <Text style={styles.tileValue}>{bodyFatPercentage !== null ? `${bodyFatPercentage.toFixed(1)} %` : '—'}</Text>
+            <Text style={styles.tileLabel}>{bodyFatPercentage !== null ? '% жира' : 'Измерения'}</Text>
+            <Text style={styles.tileValue}>{bodyFatPercentage !== null ? `${bodyFatPercentage.toFixed(1)}` : '—'}</Text>
             <Text style={styles.tileSub}>{bodyFatPercentage !== null ? 'по последним замерам' : 'талия, шея, бёдра'}</Text>
           </View>
 
-          {/* Калории — норма для цели */}
+          {/* Калории — до XYZ для похудения */}
           <View style={[styles.tile, { backgroundColor: colors.pastelBlue }]}>
             <Text style={styles.tileEmoji}>🔥</Text>
             <Text style={styles.tileLabel}>Калории в день</Text>
-            <Text style={styles.tileValue}>{Math.round(dailyCalories)}</Text>
-            <Text style={styles.tileSub}>{weightToLose > 0 ? 'норма для похудения' : 'поддержание веса'}</Text>
+            <Text style={styles.tileValue}>{weightToLose > 0 ? `до ${Math.round(dailyCalories)}` : Math.round(dailyCalories)}</Text>
+            <Text style={styles.tileSub}>{weightToLose > 0 ? 'для похудения' : 'поддержание веса'}</Text>
           </View>
         </View>
 
@@ -223,8 +223,15 @@ export const DashboardScreen = ({ onAddEntry }) => {
           </View>
         </View>
 
-        {/* === Плашка 2: Дефицит, Цель к, Темп === */}
+        {/* === Плашка 2: Темп, Дефицит в день, Цель к (дд.мм.гггг) === */}
         <View style={[styles.deficitStrip, { backgroundColor: colors.pastelPeach }]}>
+          <View style={styles.deficitRow}>
+            <Text style={styles.deficitLabel}>Темп</Text>
+            <Text style={styles.deficitValue}>
+              {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
+            </Text>
+          </View>
+          <View style={styles.deficitSep} />
           <View style={styles.deficitRow}>
             <Text style={styles.deficitLabel}>Дефицит в день</Text>
             <Text style={styles.deficitValue}>{weightToLose > 0 ? `${paceDeficits[userData.pace]} ккал` : '—'}</Text>
@@ -238,16 +245,12 @@ export const DashboardScreen = ({ onAddEntry }) => {
                     const { weeks } = calculateTimeToGoal(currentWeight, userData.goal_weight, userData.pace);
                     const d = new Date();
                     d.setDate(d.getDate() + weeks * 7);
-                    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const year = d.getFullYear();
+                    return `${day}.${month}.${year}`;
                   })()
                 : '—'}
-            </Text>
-          </View>
-          <View style={styles.deficitSep} />
-          <View style={styles.deficitRow}>
-            <Text style={styles.deficitLabel}>Темп</Text>
-            <Text style={styles.deficitValue}>
-              {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
             </Text>
           </View>
         </View>
