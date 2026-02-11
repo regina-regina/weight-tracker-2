@@ -223,54 +223,60 @@ export const DashboardScreen = ({ onAddEntry }) => {
         </View>
 
         <View style={styles.tileRow}>
-          {/* Процент жира по последним замерам (абсолютная величина) */}
+          {/* Процент жира: при отсутствии замеров — «Внести данные», при 0.0 — «Нет данных» */}
           <View style={[styles.tile, { backgroundColor: bodyFatPercentage !== null ? colors.pastelCoral : colors.pastelSage }]}>
             <Text style={styles.tileEmoji}>{bodyFatPercentage !== null ? '💪' : '📝'}</Text>
             <Text style={styles.tileLabel}>{bodyFatPercentage !== null ? '% жира' : 'Измерения'}</Text>
-            <Text style={styles.tileValue}>{bodyFatPercentage !== null ? `${bodyFatPercentage.toFixed(1)}` : '—'}</Text>
-            <Text style={styles.tileSub}>{bodyFatPercentage !== null ? 'по последним замерам' : 'талия, шея, бёдра'}</Text>
+            <Text style={styles.tileValue}>
+              {bodyFatPercentage === null
+                ? 'Внести данные'
+                : bodyFatPercentage === 0
+                  ? 'Нет данных'
+                  : bodyFatPercentage.toFixed(1)}
+            </Text>
+            <Text style={styles.tileSub}>{bodyFatPercentage !== null ? 'По замерам' : 'талия, шея, бёдра'}</Text>
           </View>
 
-          {/* Калории — до XYZ для похудения */}
+          {/* Лимит калорий */}
           <View style={[styles.tile, { backgroundColor: colors.pastelBlue }]}>
             <Text style={styles.tileEmoji}>🔥</Text>
-            <Text style={styles.tileLabel}>Калории в день</Text>
-            <Text style={styles.tileValue}>{weightToLose > 0 ? `до ${Math.round(dailyCalories)}` : Math.round(dailyCalories)}</Text>
-            <Text style={styles.tileSub}>{weightToLose > 0 ? 'для похудения' : 'поддержание веса'}</Text>
+            <Text style={styles.tileLabel}>Лимит калорий</Text>
+            <Text style={styles.tileValue}>{Math.round(dailyCalories)}</Text>
+            <Text style={styles.tileSub}>{weightToLose > 0 ? 'дневная норма' : 'поддержание веса'}</Text>
           </View>
         </View>
 
-        {/* === Плашка 1: Обмен и Расход === */}
+        {/* === Плашка 1: Базовый обмен и Общий расход === */}
         <View style={[styles.infoStrip, { backgroundColor: colors.pastelLavender }]}>
           <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Обмен</Text>
+            <Text style={styles.infoLabel} numberOfLines={2} allowFontScaling={false}>Базовый обмен</Text>
             <Text style={styles.infoValue}>{Math.round(bmr)}</Text>
             <Text style={styles.infoUnit}>ккал/день</Text>
           </View>
           <View style={styles.infoSep} />
           <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Расход</Text>
+            <Text style={styles.infoLabel} numberOfLines={2} allowFontScaling={false}>Общий расход</Text>
             <Text style={styles.infoValue}>{Math.round(tdee)}</Text>
             <Text style={styles.infoUnit}>ккал/день</Text>
           </View>
         </View>
 
-        {/* === Плашка 2: Темп, Дефицит в день, Цель к (дд.мм.гггг) === */}
+        {/* === Плашка 2: Темп похудения, Дефицит, Достижение === */}
         <View style={[styles.deficitStrip, { backgroundColor: colors.pastelPeach }]}>
           <View style={styles.deficitRow}>
-            <Text style={styles.deficitLabel}>Темп</Text>
+            <Text style={styles.deficitLabel} numberOfLines={2}>Темп похудения</Text>
             <Text style={styles.deficitValue}>
               {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
             </Text>
           </View>
           <View style={styles.deficitSep} />
           <View style={styles.deficitRow}>
-            <Text style={styles.deficitLabel}>Дефицит в день</Text>
+            <Text style={styles.deficitLabel}>Дефицит</Text>
             <Text style={styles.deficitValue}>{weightToLose > 0 ? `${paceDeficits[userData.pace]} ккал` : '—'}</Text>
           </View>
           <View style={styles.deficitSep} />
           <View style={styles.deficitRow}>
-            <Text style={styles.deficitLabel}>Цель к</Text>
+            <Text style={styles.deficitLabel}>Достижение</Text>
             <Text style={styles.deficitValue}>
               {weightToLose > 0
                 ? (() => {
@@ -290,23 +296,23 @@ export const DashboardScreen = ({ onAddEntry }) => {
         {/* Плашка активных калорий — только если есть данные за день, неделю или месяц */}
         {showActiveCaloriesStrip && (
           <View style={[styles.activeCalStrip, { backgroundColor: colors.pastelMint }]}>
-            <View style={styles.activeCalItem}>
-              <Text style={styles.activeCalValue}>{Math.round(activeToday)}</Text>
-              <Text style={styles.activeCalLabel}>активных калорий</Text>
-              <Text style={styles.activeCalSub}>за сегодня</Text>
+            <View style={styles.activeCalRow}>
+              <View style={styles.activeCalItem}>
+                <Text style={styles.activeCalTitle}>Сегодня</Text>
+                <Text style={styles.activeCalValue}>{Math.round(activeToday)}</Text>
+              </View>
+              <View style={styles.activeCalSep} />
+              <View style={styles.activeCalItem}>
+                <Text style={styles.activeCalTitle}>Неделя</Text>
+                <Text style={styles.activeCalValue}>{Math.round(activeWeek)}</Text>
+              </View>
+              <View style={styles.activeCalSep} />
+              <View style={styles.activeCalItem}>
+                <Text style={styles.activeCalTitle}>Месяц</Text>
+                <Text style={styles.activeCalValue}>{Math.round(activeMonth)}</Text>
+              </View>
             </View>
-            <View style={styles.activeCalSep} />
-            <View style={styles.activeCalItem}>
-              <Text style={styles.activeCalValue}>{Math.round(activeWeek)}</Text>
-              <Text style={styles.activeCalLabel}>активных калорий</Text>
-              <Text style={styles.activeCalSub}>за неделю</Text>
-            </View>
-            <View style={styles.activeCalSep} />
-            <View style={styles.activeCalItem}>
-              <Text style={styles.activeCalValue}>{Math.round(activeMonth)}</Text>
-              <Text style={styles.activeCalLabel}>активных калорий</Text>
-              <Text style={styles.activeCalSub}>за месяц</Text>
-            </View>
+            <Text style={styles.activeCalSubCommon}>Активных калорий</Text>
           </View>
         )}
 
@@ -457,6 +463,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
+    textAlign: 'center',
   },
   infoValue: {
     fontSize: 18,
@@ -493,43 +500,47 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
+    textAlign: 'center',
   },
   deficitValue: { fontSize: 15, fontFamily: 'Montserrat_700Bold', color: colors.textPrimary },
   deficitSep: { width: 1, height: 36, backgroundColor: 'rgba(43,32,53,0.12)' },
 
   activeCalStrip: {
-    flexDirection: 'row',
     borderRadius: 20,
     padding: 18,
     marginTop: 12,
-    alignItems: 'center',
-    justifyContent: 'space-around',
     shadowColor: '#D5CDE0',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 2,
   },
+  activeCalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
   activeCalItem: { alignItems: 'center', flex: 1 },
+  activeCalTitle: {
+    fontSize: 10,
+    fontFamily: 'Montserrat_500Medium',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
   activeCalValue: {
     fontSize: 20,
     fontWeight: '700',
     fontFamily: 'Montserrat_700Bold',
     color: colors.textPrimary,
   },
-  activeCalLabel: {
-    fontSize: 10,
-    fontFamily: 'Montserrat_500Medium',
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginTop: 2,
-  },
-  activeCalSub: {
+  activeCalSubCommon: {
     fontSize: 11,
     fontFamily: 'Montserrat_400Regular',
     color: colors.textSecondary,
-    marginTop: 2,
+    marginTop: 10,
+    textAlign: 'center',
   },
-  activeCalSep: { width: 1, height: 40, backgroundColor: 'rgba(43,32,53,0.12)' },
+  activeCalSep: { width: 1, height: 36, backgroundColor: 'rgba(43,32,53,0.12)' },
 });

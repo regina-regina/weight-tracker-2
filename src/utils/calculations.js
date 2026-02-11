@@ -13,7 +13,7 @@ export const calculateBMI = (weight, height) => {
 // Интерпретация ИМТ
 export const getBMICategory = (bmi) => {
   if (bmi < 18.5) return 'Недостаточный вес';
-  if (bmi < 25) return 'Нормальный вес';
+  if (bmi < 25) return 'Норма';
   if (bmi < 30) return 'Избыточный вес';
   return 'Ожирение';
 };
