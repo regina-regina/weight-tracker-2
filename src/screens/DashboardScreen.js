@@ -7,6 +7,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { AppColors } from '../styles/colors';
+import { AppLucideIcon, sizeMedium } from '../components/AppLucideIcon';
 import { supabase } from '../services/supabase';
 import {
   calculateBMI,
@@ -176,31 +177,35 @@ export const DashboardScreen = ({ onAddEntry }) => {
                 <Text style={styles.heroUnit}>кг</Text>
               </View>
             </View>
-            <Text style={styles.heroEmoji}>⚖️</Text>
+            <AppLucideIcon name="scale" size={40} color={AppColors.white} />
           </View>
           <View style={styles.progressBar}>
             <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
           </View>
           <View style={styles.progressLabels}>
             <Text style={styles.progressLabel}>{initialWeight} кг</Text>
-            <Text style={styles.progressLabel}>🎯 {userData.goal_weight} кг</Text>
+            <Text style={styles.progressLabel}>{userData.goal_weight} кг</Text>
           </View>
           {weightToLose > 0 ? (
             <Text style={styles.remainingText}>Осталось {weightToLose.toFixed(1)} кг</Text>
           ) : (
-            <Text style={styles.achievedText}>🎉 Цель достигнута!</Text>
+            <Text style={styles.achievedText}>Цель достигнута!</Text>
           )}
         </View>
 
         <View style={styles.tileRow}>
           <View style={[styles.tile, { backgroundColor: AppColors.sageMintLight }, styles.cardShadow]}>
-            <Text style={styles.tileEmoji}>📊</Text>
+            <View style={styles.tileIconWrap}>
+              <AppLucideIcon name="activity" type="bmi" size={sizeMedium} />
+            </View>
             <Text style={[styles.tileLabel, { color: AppColors.deepSea }]}>ИМТ</Text>
             <Text style={[styles.tileValue, { color: AppColors.textPrimary }]}>{bmi.toFixed(1)}</Text>
             <Text style={[styles.tileSub, { color: AppColors.bmiSub }]}>{bmiCategory}</Text>
           </View>
           <View style={[styles.tile, { backgroundColor: AppColors.peachyLight }, styles.cardShadow]}>
-            <Text style={styles.tileEmoji}>🎯</Text>
+            <View style={styles.tileIconWrap}>
+              <AppLucideIcon name="target" type="goal" size={sizeMedium} />
+            </View>
             <Text style={[styles.tileLabel, { color: AppColors.goalTitle }]}>Цель</Text>
             <Text style={[styles.tileValue, { color: AppColors.textPrimary }]}>{userData.goal_weight.toFixed(1)}</Text>
             <Text style={[styles.tileSub, { color: AppColors.goalTitle }]}>кг</Text>
@@ -209,7 +214,9 @@ export const DashboardScreen = ({ onAddEntry }) => {
 
         <View style={styles.tileRow}>
           <View style={[styles.tile, { backgroundColor: (bodyFatPercentage != null && bodyFatPercentage > 0) ? AppColors.softBlush : AppColors.cloudCream }, styles.cardShadow]}>
-            <Text style={styles.tileEmoji}>{bodyFatPercentage !== null && bodyFatPercentage > 0 ? '💪' : '📝'}</Text>
+            <View style={styles.tileIconWrap}>
+              <AppLucideIcon name="ruler" type={bodyFatPercentage != null && bodyFatPercentage > 0 ? 'measurements_filled' : 'measurements_empty'} size={sizeMedium} />
+            </View>
             <Text style={[styles.tileLabel, { color: (bodyFatPercentage != null && bodyFatPercentage > 0) ? AppColors.deepSea : AppColors.textSecondary }]}>
               {bodyFatPercentage !== null && bodyFatPercentage > 0 ? '% жира' : 'Измерения'}
             </Text>
@@ -221,7 +228,9 @@ export const DashboardScreen = ({ onAddEntry }) => {
             </Text>
           </View>
           <View style={[styles.tile, { backgroundColor: AppColors.blueLight }, styles.cardShadow]}>
-            <Text style={styles.tileEmoji}>🔥</Text>
+            <View style={styles.tileIconWrap}>
+              <AppLucideIcon name="flame" type="calories" size={sizeMedium} />
+            </View>
             <Text style={[styles.tileLabel, { color: AppColors.deepSea }]}>Лимит калорий</Text>
             <Text style={[styles.tileValue, { color: AppColors.textPrimary }]}>{Math.round(dailyCalories)}</Text>
             <Text style={[styles.tileSub, { color: AppColors.caloriesSub }]}>{weightToLose > 0 ? 'дневная норма' : 'поддержание веса'}</Text>
@@ -230,12 +239,18 @@ export const DashboardScreen = ({ onAddEntry }) => {
 
         <View style={[styles.infoStrip, { backgroundColor: AppColors.beigeWarm }, styles.cardShadow]}>
           <View style={styles.infoItem}>
+            <View style={styles.infoIconWrap}>
+              <AppLucideIcon name="zap" type="metabolism" size={20} />
+            </View>
             <Text style={[styles.infoLabel, { color: AppColors.bmrStripTitle }]} numberOfLines={2} allowFontScaling={false}>Базовый обмен</Text>
             <Text style={[styles.infoValue, { color: AppColors.textPrimary }]}>{Math.round(bmr)}</Text>
             <Text style={[styles.infoUnit, { color: AppColors.bmrStripSub }]}>ккал/день</Text>
           </View>
           <View style={[styles.infoSep, { backgroundColor: AppColors.bmrStripDivider }]} />
           <View style={styles.infoItem}>
+            <View style={styles.infoIconWrap}>
+              <AppLucideIcon name="batteryCharging" type="expenditure" size={20} />
+            </View>
             <Text style={[styles.infoLabel, { color: AppColors.bmrStripTitle }]} numberOfLines={2} allowFontScaling={false}>Общий расход</Text>
             <Text style={[styles.infoValue, { color: AppColors.textPrimary }]}>{Math.round(tdee)}</Text>
             <Text style={[styles.infoUnit, { color: AppColors.bmrStripSub }]}>ккал/день</Text>
@@ -244,6 +259,9 @@ export const DashboardScreen = ({ onAddEntry }) => {
 
         <View style={[styles.deficitStrip, { backgroundColor: AppColors.peachyLight }, styles.cardShadow]}>
           <View style={styles.deficitRow}>
+            <View style={styles.deficitIconWrap}>
+              <AppLucideIcon name="timer" type="pace" size={18} />
+            </View>
             <Text style={[styles.deficitLabel, { color: AppColors.goalTitle }]} numberOfLines={2}>Темп похудения</Text>
             <Text style={[styles.deficitValue, { color: AppColors.textPrimary }]}>
               {userData.pace === 'fast' ? 'Быстр.' : userData.pace === 'optimal' ? 'Опт.' : 'Медл.'}
@@ -275,6 +293,9 @@ export const DashboardScreen = ({ onAddEntry }) => {
 
         {showActiveCaloriesStrip && (
           <View style={[styles.activeCalStrip, { backgroundColor: AppColors.sageMintLight }, styles.cardShadow]}>
+            <View style={styles.activeCalIconWrap}>
+              <AppLucideIcon name="footprints" type="activity" size={20} />
+            </View>
             <View style={styles.activeCalRow}>
               <View style={styles.activeCalItem}>
                 <Text style={[styles.activeCalTitle, { color: AppColors.deepSea }]}>Сегодня</Text>
@@ -360,7 +381,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_500Medium',
     color: AppColors.white,
   },
-  heroEmoji: { fontSize: 40 },
+  tileIconWrap: { marginBottom: 8 },
+  infoIconWrap: { marginBottom: 6 },
+  deficitIconWrap: { marginBottom: 4 },
+  activeCalIconWrap: { marginBottom: 8, alignItems: 'center' },
 
   progressBar: {
     height: 7,
@@ -391,7 +415,6 @@ const styles = StyleSheet.create({
     padding: 16,
     minHeight: 130,
   },
-  tileEmoji: { fontSize: 24, marginBottom: 8 },
   tileLabel: {
     fontSize: 11,
     fontFamily: 'Montserrat_500Medium',

@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AppIcon } from '../components/AppIcon';
+import { Home, Clock, ChartBar, User, Plus } from 'lucide-react-native';
+import { AppColors } from '../styles/colors';
 import { DashboardScreen } from './DashboardScreen';
 import { HistoryScreen } from './HistoryScreen';
 import { ChartsScreen } from './ChartsScreen';
 import { ProfileScreen } from './ProfileScreen';
 import { AddEntryScreen } from './AddEntryScreen';
-import { AppColors } from '../styles/colors';
 
 export const MainScreen = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -38,11 +38,17 @@ export const MainScreen = () => {
     setRefreshKey((prev) => prev + 1);
   }, []);
 
+  const TAB_ICONS = {
+    dashboard: Home,
+    history: Clock,
+    charts: ChartBar,
+    profile: User,
+  };
   const tabs = [
-    { key: 'dashboard', label: 'Главная', icon: 'home', iconOutline: 'home-outline' },
-    { key: 'history', label: 'История', icon: 'list', iconOutline: 'list-outline' },
-    { key: 'charts', label: 'Графики', icon: 'bar-chart', iconOutline: 'bar-chart-outline' },
-    { key: 'profile', label: 'Профиль', icon: 'person', iconOutline: 'person-outline' },
+    { key: 'dashboard', label: 'Главная' },
+    { key: 'history', label: 'История' },
+    { key: 'charts', label: 'Графики' },
+    { key: 'profile', label: 'Профиль' },
   ];
 
   const renderScreen = () => {
@@ -71,7 +77,7 @@ export const MainScreen = () => {
           onPress={handleAddEntry}
           activeOpacity={0.8}
         >
-          <AppIcon name="add" size={32} color={AppColors.white} />
+          <Plus size={28} color={AppColors.white} strokeWidth={2.5} />
         </TouchableOpacity>
       )}
 
@@ -89,16 +95,17 @@ export const MainScreen = () => {
       <View style={styles.tabBar}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
+          const IconComponent = TAB_ICONS[tab.key];
           return (
             <TouchableOpacity
               key={tab.key}
               style={styles.tabItem}
               onPress={() => setActiveTab(tab.key)}
             >
-              <AppIcon
-                name={isActive ? tab.icon : tab.iconOutline}
+              <IconComponent
                 size={24}
                 color={isActive ? AppColors.coralAccent : AppColors.inactive}
+                strokeWidth={2}
               />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
                 {tab.label}

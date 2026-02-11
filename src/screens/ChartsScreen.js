@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { AppColors } from '../styles/colors';
+import { AppLucideIcon, sizeMedium } from '../components/AppLucideIcon';
 import { supabase } from '../services/supabase';
 import { calculateBodyFat } from '../utils/calculations';
 
@@ -179,7 +180,10 @@ export const ChartsScreen = () => {
 
         {/* === ГРАФИК ВЕСА === */}
         <View style={[styles.chartCard, { backgroundColor: AppColors.softBlush }]}>
-          <Text style={styles.chartTitle}>📈 Изменение веса</Text>
+          <View style={styles.chartTitleRow}>
+            <AppLucideIcon name="trendingUp" type="chart" size={sizeMedium} />
+            <Text style={styles.chartTitle}>Изменение веса</Text>
+          </View>
           <PeriodSelector period={weightPeriod} setPeriod={setWeightPeriod} options={periodOpts} />
           {weightData.length > 1 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chartScroll} contentContainerStyle={styles.chartScrollContent}>
@@ -224,7 +228,10 @@ export const ChartsScreen = () => {
         {/* === ГРАФИК % ЖИРА === */}
         {bodyFatData.length > 1 && (
           <View style={[styles.chartCard, { backgroundColor: AppColors.sageMintLight }]}>
-            <Text style={styles.chartTitle}>💪 Процент жира</Text>
+            <View style={styles.chartTitleRow}>
+            <AppLucideIcon name="activity" type="chart" size={sizeMedium} />
+            <Text style={styles.chartTitle}>Процент жира</Text>
+          </View>
             <PeriodSelector period={bodyFatPeriod} setPeriod={setBodyFatPeriod} options={periodOpts} />
             <View style={styles.chartBox}>
               <LineChart
@@ -290,7 +297,8 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     ...AppColors.cardShadow,
   },
-  chartTitle: { fontSize: 17, fontWeight: '700', fontFamily: 'Montserrat_700Bold', color: AppColors.deepSea, marginBottom: 14 },
+  chartTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },
+  chartTitle: { fontSize: 17, fontWeight: '700', fontFamily: 'Montserrat_700Bold', color: AppColors.deepSea, flex: 1 },
   chartBox: { marginTop: 6, overflow: 'hidden' },
 
   periodWrap: {

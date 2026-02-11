@@ -12,6 +12,7 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { AppColors } from '../styles/colors';
+import { AppLucideIcon, sizeMedium } from '../components/AppLucideIcon';
 import { supabase } from '../services/supabase';
 import { activityLevels, paces, genders } from '../utils/constants';
 
@@ -145,7 +146,10 @@ export const ProfileScreen = () => {
 
         {/* Основные данные */}
         <Card color={AppColors.softBlush}>
-          <Text style={styles.cardTitle}>👤 Основные данные</Text>
+          <View style={styles.cardTitleRow}>
+            <AppLucideIcon name="user" type="user" size={sizeMedium} />
+            <Text style={styles.cardTitle}>Основные данные</Text>
+          </View>
 
           <Text style={styles.label}>Пол</Text>
           <View style={styles.optionsRow}>
@@ -168,13 +172,19 @@ export const ProfileScreen = () => {
 
         {/* Цели */}
         <Card color={AppColors.sageMintLight}>
-          <Text style={styles.cardTitle}>🎯 Цели</Text>
+          <View style={styles.cardTitleRow}>
+            <AppLucideIcon name="target" type="profile_goal" size={sizeMedium} />
+            <Text style={styles.cardTitle}>Цели</Text>
+          </View>
           <Input label="Целевой вес (кг)" value={goalWeight} onChangeText={setGoalWeight} keyboardType="numeric" />
         </Card>
 
         {/* Активность */}
         <Card color={AppColors.beigeWarm}>
-          <Text style={styles.cardTitle}>🏃 Уровень активности</Text>
+          <View style={styles.cardTitleRow}>
+            <AppLucideIcon name="personStanding" type="profile_activity" size={sizeMedium} />
+            <Text style={styles.cardTitle}>Уровень активности</Text>
+          </View>
           {activityLevels.map((level) => (
             <TouchableOpacity
               key={level.value}
@@ -198,7 +208,10 @@ export const ProfileScreen = () => {
 
         {/* Темп */}
         <Card color={AppColors.peachyLight}>
-          <Text style={styles.cardTitle}>⚡ Темп похудения</Text>
+          <View style={styles.cardTitleRow}>
+            <AppLucideIcon name="zap" type="profile_pace" size={sizeMedium} />
+            <Text style={styles.cardTitle}>Темп похудения</Text>
+          </View>
           {paces.map((p) => (
             <TouchableOpacity
               key={p.value}
@@ -293,12 +306,18 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_500Medium',
     color: '#95A5A6',
   },
+  cardTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 16,
+  },
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
     fontFamily: 'Montserrat_600SemiBold',
     color: AppColors.deepSea,
-    marginBottom: 16,
+    flex: 1,
   },
   label: {
     fontSize: 14,
