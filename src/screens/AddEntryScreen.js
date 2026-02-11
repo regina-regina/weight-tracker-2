@@ -40,6 +40,9 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
   const [hips, setHips] = useState(existingEntry ? String(existingEntry.hips || '') : '');
   const [thigh, setThigh] = useState(existingEntry ? String(existingEntry.thigh || '') : '');
   const [neck, setNeck] = useState(existingEntry ? String(existingEntry.neck || '') : '');
+  const [activeCalories, setActiveCalories] = useState(
+    existingEntry?.active_calories != null ? String(existingEntry.active_calories) : ''
+  );
 
   const showDatePicker = () => {
     // ИСПРАВЛЕНО: Правильно парсим дату из строки YYYY-MM-DD
@@ -115,6 +118,7 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
         hips: hips ? parseFloat(hips) : null,
         thigh: thigh ? parseFloat(thigh) : null,
         neck: neck ? parseFloat(neck) : null,
+        active_calories: activeCalories.trim() ? parseFloat(activeCalories) : null,
         timestamp: new Date().toISOString(),
       };
 
@@ -349,6 +353,20 @@ export const AddEntryScreen = ({ entry, onClose, onSaved }) => {
             value={neck}
             onChangeText={setNeck}
             placeholder="Например, 32"
+            keyboardType="numeric"
+          />
+        </Card>
+
+        <Card color={colors.pastelBlue}>
+          <Text style={styles.cardTitle}>Активные калории</Text>
+          <Text style={styles.subtitle}>
+            Необязательно. Калории сверх базового обмена (тренировка, активность)
+          </Text>
+          <Input
+            label="Потрачено ккал (сверх обмена)"
+            value={activeCalories}
+            onChangeText={setActiveCalories}
+            placeholder="Например, 300"
             keyboardType="numeric"
           />
         </Card>

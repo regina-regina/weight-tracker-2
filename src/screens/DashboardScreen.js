@@ -23,6 +23,7 @@ export const DashboardScreen = ({ onAddEntry }) => {
   const [userData, setUserData] = useState(null);
   const [latestEntry, setLatestEntry] = useState(null);
   const [latestEntryWithMeasurements, setLatestEntryWithMeasurements] = useState(null);
+  const [activeCaloriesEntries, setActiveCaloriesEntries] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -47,6 +48,18 @@ export const DashboardScreen = ({ onAddEntry }) => {
         (e) => e.waist && e.neck && (userProfile?.gender === 'male' || e.hips)
       );
       setLatestEntryWithMeasurements(withMeasurements || null);
+
+      const today = new Date();
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const monthStartStr = monthStart.toISOString().split('T')[0];
+      const todayStr = today.toISOString().split('T')[0];
+      const { data: activeEntries } = await supabase
+        .from('entries')
+        .select('date, active_calories')
+        .eq('user_id', user.id)
+        .gte('date', monthStartStr)
+        .lte('date', todayStr);
+      setActiveCaloriesEntries(activeEntries || []);
     } catch (error) {
       console.error('Ошибка загрузки данных:', error);
     } finally {
@@ -115,6 +128,25 @@ export const DashboardScreen = ({ onAddEntry }) => {
   const progressPercent = totalToLose > 0
     ? Math.min(100, Math.max(0, ((initialWeight - currentWeight) / totalToLose) * 100))
     : 0;
+
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const monthStartStr = monthStart.toISOString().split('T')[0];
+  const weekStart = new Date(today);
+  const dayOfWeek = weekStart.getDay();
+  const toMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  weekStart.setDate(weekStart.getDate() - toMonday);
+  const weekStartStr = weekStart.toISOString().split('T')[0];
+  const activeToday = activeCaloriesEntries
+    .filter((e) => e.date === todayStr)
+    .reduce((s, e) => s + (Number(e.active_calories) || 0), 0);
+  const activeWeek = activeCaloriesEntries
+    .filter((e) => e.date >= weekStartStr && e.date <= todayStr)
+    .reduce((s, e) => s + (Number(e.active_calories) || 0), 0);
+  const activeMonth = activeCaloriesEntries
+    .reduce((s, e) => s + (Number(e.active_calories) || 0), 0);
+  const showActiveCaloriesStrip = activeToday > 0 || activeWeek > 0 || activeMonth > 0;
 
   const getGreeting = () => {
     const h = new Date().getHours();
@@ -254,6 +286,29 @@ export const DashboardScreen = ({ onAddEntry }) => {
             </Text>
           </View>
         </View>
+
+        {/* Плашка активных калорий — только если есть данные за день, неделю или месяц */}
+        {showActiveCaloriesStrip && (
+          <View style={[styles.activeCalStrip, { backgroundColor: colors.pastelMint }]}>
+            <View style={styles.activeCalItem}>
+              <Text style={styles.activeCalValue}>{Math.round(activeToday)}</Text>
+              <Text style={styles.activeCalLabel}>активных калорий</Text>
+              <Text style={styles.activeCalSub}>за сегодня</Text>
+            </View>
+            <View style={styles.activeCalSep} />
+            <View style={styles.activeCalItem}>
+              <Text style={styles.activeCalValue}>{Math.round(activeWeek)}</Text>
+              <Text style={styles.activeCalLabel}>активных калорий</Text>
+              <Text style={styles.activeCalSub}>за неделю</Text>
+            </View>
+            <View style={styles.activeCalSep} />
+            <View style={styles.activeCalItem}>
+              <Text style={styles.activeCalValue}>{Math.round(activeMonth)}</Text>
+              <Text style={styles.activeCalLabel}>активных калорий</Text>
+              <Text style={styles.activeCalSub}>за месяц</Text>
+            </View>
+          </View>
+        )}
 
         <View style={{ height: 90 }} />
       </ScrollView>
@@ -441,4 +496,40 @@ const styles = StyleSheet.create({
   },
   deficitValue: { fontSize: 15, fontFamily: 'Montserrat_700Bold', color: colors.textPrimary },
   deficitSep: { width: 1, height: 36, backgroundColor: 'rgba(43,32,53,0.12)' },
+
+  activeCalStrip: {
+    flexDirection: 'row',
+    borderRadius: 20,
+    padding: 18,
+    marginTop: 12,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    shadowColor: '#D5CDE0',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  activeCalItem: { alignItems: 'center', flex: 1 },
+  activeCalValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily: 'Montserrat_700Bold',
+    color: colors.textPrimary,
+  },
+  activeCalLabel: {
+    fontSize: 10,
+    fontFamily: 'Montserrat_500Medium',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  activeCalSub: {
+    fontSize: 11,
+    fontFamily: 'Montserrat_400Regular',
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  activeCalSep: { width: 1, height: 40, backgroundColor: 'rgba(43,32,53,0.12)' },
 });

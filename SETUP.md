@@ -49,6 +49,7 @@ CREATE TABLE entries (
   hips DECIMAL(5,2) CHECK (hips IS NULL OR hips > 0),
   thigh DECIMAL(5,2) CHECK (thigh IS NULL OR thigh > 0),
   neck DECIMAL(5,2) CHECK (neck IS NULL OR neck > 0),
+  active_calories DECIMAL(8,2) CHECK (active_calories IS NULL OR active_calories >= 0),
   timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(user_id, date)
 );
