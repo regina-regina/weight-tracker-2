@@ -11,7 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Ionicons } from '@expo/vector-icons';
+import { AppIcon } from '../components/AppIcon';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -224,7 +224,7 @@ export const AddEntryScreen = ({ entry, onClose }) => {
             {isEditing ? 'Редактировать запись' : 'Добавить запись'}
           </Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={28} color={colors.textPrimary} />
+            <AppIcon name="close" size={28} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
 
@@ -233,13 +233,35 @@ export const AddEntryScreen = ({ entry, onClose }) => {
 
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Дата</Text>
-            <TouchableOpacity style={styles.dateInput} onPress={showDatePicker}>
-              <Text style={styles.dateText}>{formatDateDisplay(date)}</Text>
-              <Ionicons name="calendar-outline" size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
+            {Platform.OS === 'web' ? (
+              <View style={styles.dateInputRow}>
+                {React.createElement('input', {
+                  type: 'date',
+                  value: date,
+                  max: new Date().toISOString().split('T')[0],
+                  onChange: (e) => setDate(e.target.value),
+                  style: {
+                    flex: 1,
+                    fontSize: 16,
+                    padding: 14,
+                    marginRight: 12,
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: '#F0F4F8',
+                    fontFamily: 'Montserrat_500Medium',
+                  },
+                })}
+                <Text style={styles.dateText}>{formatDateDisplay(date)}</Text>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.dateInput} onPress={showDatePicker}>
+                <Text style={styles.dateText}>{formatDateDisplay(date)}</Text>
+                <AppIcon name="calendar-outline" size={20} color={colors.textSecondary} />
+              </TouchableOpacity>
+            )}
           </View>
 
-          {Platform.OS === 'ios' ? (
+          {Platform.OS === 'web' ? null : Platform.OS === 'ios' ? (
             <Modal
               visible={isDatePickerVisible}
               transparent={true}
@@ -426,6 +448,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Montserrat_500Medium',
     color: colors.textPrimary,
+  },
+  dateInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#F0F4F8',
   },
   modalOverlay: {
     flex: 1,

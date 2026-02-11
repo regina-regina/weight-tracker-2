@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { AppIcon } from '../components/AppIcon';
 import { DashboardScreen } from './DashboardScreen';
 import { HistoryScreen } from './HistoryScreen';
 import { ChartsScreen } from './ChartsScreen';
@@ -71,7 +71,7 @@ export const MainScreen = () => {
           onPress={handleAddEntry}
           activeOpacity={0.8}
         >
-          <Ionicons name="add" size={32} color="#FFFFFF" />
+          <AppIcon name="add" size={32} color="#FFFFFF" />
         </TouchableOpacity>
       )}
 
@@ -95,7 +95,7 @@ export const MainScreen = () => {
               style={styles.tabItem}
               onPress={() => setActiveTab(tab.key)}
             >
-              <Ionicons
+              <AppIcon
                 name={isActive ? tab.icon : tab.iconOutline}
                 size={24}
                 color={isActive ? colors.tabBarActive : colors.tabBarInactive}

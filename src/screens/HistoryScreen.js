@@ -8,7 +8,7 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { AppIcon } from '../components/AppIcon';
 import { colors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 
@@ -126,7 +126,7 @@ export const HistoryScreen = ({ onEditEntry }) => {
             <Text style={styles.entryWeight}>{item.weight.toFixed(1)} кг</Text>
             {diff !== null && (
               <View style={styles.diffContainer}>
-                <Ionicons
+                <AppIcon
                   name={diff < 0 ? 'arrow-down' : diff > 0 ? 'arrow-up' : 'remove'}
                   size={16}
                   color={diff < 0 ? '#4CAF50' : diff > 0 ? '#FF5252' : colors.textSecondary}
