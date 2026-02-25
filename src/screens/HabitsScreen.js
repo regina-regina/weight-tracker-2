@@ -264,11 +264,13 @@ export const HabitsScreen = ({ activeTab, openAddHabitModal, onCloseAddHabitModa
         ) : (
           habits.map((habit) => {
             const doneSet = logsByHabit[habit.id] || new Set();
+            const doneCount = doneSet.size;
             return (
               <View key={habit.id} style={[styles.card, AppColors.cardShadow]}>
                 <View style={styles.cardTitleRow}>
                   <PersonStanding size={22} color={AppColors.deepSea} strokeWidth={2} />
                   <Text style={styles.cardTitle} numberOfLines={1}>{habit.name}</Text>
+                  <Text style={styles.habitCount}>{doneCount}</Text>
                   <TouchableOpacity
                     hitSlop={12}
                     onPress={() => handleDeleteHabit(habit)}
@@ -417,6 +419,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Montserrat_600SemiBold',
     color: AppColors.textPrimary,
+  },
+  habitCount: {
+    fontSize: 15,
+    fontFamily: 'Montserrat_600SemiBold',
+    color: AppColors.successGreen,
+    marginRight: 4,
+    minWidth: 20,
+    textAlign: 'right',
   },
   deleteBtn: {
     paddingVertical: 4,
