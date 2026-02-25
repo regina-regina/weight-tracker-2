@@ -307,9 +307,9 @@ export const HabitsScreen = ({ activeTab, openAddHabitModal, onCloseAddHabitModa
                         onPress={() => toggleDay(habit.id, cell.dateStr)}
                         activeOpacity={0.7}
                       >
-                        <Text style={styles.cellDayNum}>{cell.dayNum}</Text>
-                        <Text style={styles.cellDayShort}>{cell.dayShort}</Text>
-                        <View style={[styles.cellCircle, done ? styles.circleDone : styles.circleEmpty]} />
+                        <View style={[styles.cellCircle, done ? styles.circleDone : styles.circleEmpty]}>
+                          <Text style={styles.cellDayNumInside} numberOfLines={1}>{cell.dayNum}</Text>
+                        </View>
                       </TouchableOpacity>
                     );
                   })}
@@ -466,22 +466,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 2,
   },
-  cellDayNum: {
-    fontSize: 13,
-    fontFamily: 'Montserrat_600SemiBold',
-    color: AppColors.textPrimary,
-  },
-  cellDayShort: {
-    fontSize: 9,
-    fontFamily: 'Montserrat_400Regular',
-    color: AppColors.textSecondary,
-  },
   cellCircle: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     borderWidth: 1.5,
-    marginTop: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cellDayNumInside: {
+    fontSize: 18,
+    fontFamily: 'Montserrat_600SemiBold',
+    color: 'rgba(45, 52, 54, 0.65)',
   },
   circleEmpty: {
     backgroundColor: 'transparent',
