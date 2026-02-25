@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,12 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
-import { PersonStanding } from 'lucide-react-native';
+import { PersonStanding, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { AppColors } from '../styles/colors';
 import { supabase } from '../services/supabase';
 
-const DAYS_IN_GRID = 28;
-const COLS = 7;
+const WEEKDAY_LABELS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 
 function getDateStr(d) {
   const y = d.getFullYear();
@@ -24,26 +24,45 @@ function getDateStr(d) {
   return `${y}-${m}-${day}`;
 }
 
-function buildDates() {
-  const out = [];
+function getCurrentMonth() {
   const d = new Date();
-  for (let i = DAYS_IN_GRID - 1; i >= 0; i--) {
-    const x = new Date(d);
-    x.setDate(x.getDate() - i);
-    out.push(getDateStr(x));
-  }
-  return out;
+  return { year: d.getFullYear(), month: d.getMonth() };
 }
 
-const GRID_DATES = buildDates();
+function getMonthStartEnd(year, month) {
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  return { start: getDateStr(first), end: getDateStr(last) };
+}
 
-export const HabitsScreen = ({ openAddHabitModal, onCloseAddHabitModal }) => {
+function buildMonthGrid(year, month) {
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const daysInMonth = last.getDate();
+  const startWeekday = (first.getDay() + 6) % 7;
+  const cells = [];
+  for (let i = 0; i < startWeekday; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const dayOfWeek = (date.getDay() + 6) % 7;
+    cells.push({
+      dateStr: getDateStr(date),
+      dayNum: d,
+      dayShort: WEEKDAY_LABELS[dayOfWeek],
+    });
+  }
+  return cells;
+}
+
+export const HabitsScreen = ({ activeTab, openAddHabitModal, onCloseAddHabitModal }) => {
   const [habits, setHabits] = useState([]);
   const [logsByHabit, setLogsByHabit] = useState({});
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [newHabitName, setNewHabitName] = useState('');
+  const [viewedMonth, setViewedMonth] = useState(getCurrentMonth);
+  const prevActiveTab = useRef(activeTab);
 
   useEffect(() => {
     if (openAddHabitModal) {
@@ -51,6 +70,13 @@ export const HabitsScreen = ({ openAddHabitModal, onCloseAddHabitModal }) => {
       onCloseAddHabitModal?.();
     }
   }, [openAddHabitModal, onCloseAddHabitModal]);
+
+  useEffect(() => {
+    if (prevActiveTab.current !== 'habits' && activeTab === 'habits') {
+      setViewedMonth(getCurrentMonth());
+    }
+    prevActiveTab.current = activeTab;
+  }, [activeTab]);
 
   const loadData = useCallback(async () => {
     try {
@@ -66,15 +92,13 @@ export const HabitsScreen = ({ openAddHabitModal, onCloseAddHabitModal }) => {
       if (habitsErr) throw habitsErr;
       setHabits(habitsList || []);
 
-      const startDate = GRID_DATES[0];
-      const endDate = GRID_DATES[GRID_DATES.length - 1];
-
+      const { start, end } = getMonthStartEnd(viewedMonth.year, viewedMonth.month);
       const { data: logs, error: logsErr } = await supabase
         .from('habit_logs')
         .select('habit_id, log_date')
         .eq('user_id', user.id)
-        .gte('log_date', startDate)
-        .lte('log_date', endDate);
+        .gte('log_date', start)
+        .lte('log_date', end);
 
       if (logsErr) throw logsErr;
 
@@ -89,7 +113,7 @@ export const HabitsScreen = ({ openAddHabitModal, onCloseAddHabitModal }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [viewedMonth.year, viewedMonth.month]);
 
   useEffect(() => {
     loadData();
@@ -100,6 +124,20 @@ export const HabitsScreen = ({ openAddHabitModal, onCloseAddHabitModal }) => {
     await loadData();
     setRefreshing(false);
   }, [loadData]);
+
+  const goPrevMonth = useCallback(() => {
+    setViewedMonth((prev) => {
+      if (prev.month === 0) return { year: prev.year - 1, month: 11 };
+      return { year: prev.year, month: prev.month - 1 };
+    });
+  }, []);
+
+  const goNextMonth = useCallback(() => {
+    setViewedMonth((prev) => {
+      if (prev.month === 11) return { year: prev.year + 1, month: 0 };
+      return { year: prev.year, month: prev.month + 1 };
+    });
+  }, []);
 
   const toggleDay = useCallback(async (habitId, dateStr) => {
     try {
@@ -201,6 +239,9 @@ export const HabitsScreen = ({ openAddHabitModal, onCloseAddHabitModal }) => {
     );
   }
 
+  const monthTitle = `${MONTH_NAMES[viewedMonth.month]} ${viewedMonth.year}`;
+  const gridCells = buildMonthGrid(viewedMonth.year, viewedMonth.month);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -236,16 +277,40 @@ export const HabitsScreen = ({ openAddHabitModal, onCloseAddHabitModal }) => {
                     <Text style={styles.deleteBtnText}>Удалить</Text>
                   </TouchableOpacity>
                 </View>
-                <View style={styles.grid}>
-                  {GRID_DATES.map((dateStr) => {
-                    const done = doneSet.has(dateStr);
+
+                <View style={styles.monthHeader}>
+                  <TouchableOpacity onPress={goPrevMonth} style={styles.monthArrow} hitSlop={12}>
+                    <ChevronLeft size={24} color={AppColors.deepSea} strokeWidth={2} />
+                  </TouchableOpacity>
+                  <Text style={styles.monthTitle}>{monthTitle}</Text>
+                  <TouchableOpacity onPress={goNextMonth} style={styles.monthArrow} hitSlop={12}>
+                    <ChevronRight size={24} color={AppColors.deepSea} strokeWidth={2} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.weekdayRow}>
+                  {WEEKDAY_LABELS.map((label) => (
+                    <Text key={label} style={styles.weekdayLabel}>{label}</Text>
+                  ))}
+                </View>
+
+                <View style={styles.calendarGrid}>
+                  {gridCells.map((cell, index) => {
+                    if (!cell) {
+                      return <View key={`empty-${index}`} style={styles.calendarCell} />;
+                    }
+                    const done = doneSet.has(cell.dateStr);
                     return (
                       <TouchableOpacity
-                        key={dateStr}
-                        style={[styles.circle, done ? styles.circleDone : styles.circleEmpty]}
-                        onPress={() => toggleDay(habit.id, dateStr)}
+                        key={cell.dateStr}
+                        style={styles.calendarCell}
+                        onPress={() => toggleDay(habit.id, cell.dateStr)}
                         activeOpacity={0.7}
-                      />
+                      >
+                        <Text style={styles.cellDayNum}>{cell.dayNum}</Text>
+                        <Text style={styles.cellDayShort}>{cell.dayShort}</Text>
+                        <View style={[styles.cellCircle, done ? styles.circleDone : styles.circleEmpty]} />
+                      </TouchableOpacity>
                     );
                   })}
                 </View>
@@ -362,16 +427,61 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_400Regular',
     color: AppColors.inactive,
   },
-  grid: {
+  monthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  monthArrow: {
+    padding: 4,
+  },
+  monthTitle: {
+    fontSize: 17,
+    fontFamily: 'Montserrat_600SemiBold',
+    color: AppColors.textPrimary,
+  },
+  weekdayRow: {
+    flexDirection: 'row',
+    marginBottom: 6,
+  },
+  weekdayLabel: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 11,
+    fontFamily: 'Montserrat_500Medium',
+    color: AppColors.textSecondary,
+  },
+  calendarGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
   },
-  circle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  calendarCell: {
+    width: '14.28%',
+    aspectRatio: 1,
+    maxWidth: 48,
+    maxHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 2,
+  },
+  cellDayNum: {
+    fontSize: 13,
+    fontFamily: 'Montserrat_600SemiBold',
+    color: AppColors.textPrimary,
+  },
+  cellDayShort: {
+    fontSize: 9,
+    fontFamily: 'Montserrat_400Regular',
+    color: AppColors.textSecondary,
+  },
+  cellCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     borderWidth: 1.5,
+    marginTop: 2,
   },
   circleEmpty: {
     backgroundColor: 'transparent',

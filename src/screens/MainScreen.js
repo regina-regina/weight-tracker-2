@@ -67,6 +67,7 @@ export const MainScreen = () => {
         return (
           <HabitsScreen
             key={`habits-${refreshKey}`}
+            activeTab={activeTab}
             openAddHabitModal={showAddHabitModal}
             onCloseAddHabitModal={() => setShowAddHabitModal(false)}
           />
