@@ -1,18 +1,20 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Home, Clock, ChartBar, User, Plus } from 'lucide-react-native';
+import { Home, Clock, ChartBar, User, Plus, CheckSquare } from 'lucide-react-native';
 import { AppColors } from '../styles/colors';
 import { DashboardScreen } from './DashboardScreen';
 import { HistoryScreen } from './HistoryScreen';
 import { ChartsScreen } from './ChartsScreen';
 import { ProfileScreen } from './ProfileScreen';
+import { HabitsScreen } from './HabitsScreen';
 import { AddEntryScreen } from './AddEntryScreen';
 
 export const MainScreen = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddEntry, setShowAddEntry] = useState(false);
   const [editEntry, setEditEntry] = useState(null);
+  const [showAddHabitModal, setShowAddHabitModal] = useState(false);
   // refreshKey меняется после сохранения → дочерние экраны пересоздаются и делают re-fetch
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -42,12 +44,14 @@ export const MainScreen = () => {
     dashboard: Home,
     history: Clock,
     charts: ChartBar,
+    habits: CheckSquare,
     profile: User,
   };
   const tabs = [
     { key: 'dashboard', label: 'Главная' },
     { key: 'history', label: 'История' },
     { key: 'charts', label: 'Графики' },
+    { key: 'habits', label: 'Привычки' },
     { key: 'profile', label: 'Профиль' },
   ];
 
@@ -59,6 +63,14 @@ export const MainScreen = () => {
         return <HistoryScreen key={`history-${refreshKey}`} onEditEntry={handleEditEntry} />;
       case 'charts':
         return <ChartsScreen key={`charts-${refreshKey}`} />;
+      case 'habits':
+        return (
+          <HabitsScreen
+            key={`habits-${refreshKey}`}
+            openAddHabitModal={showAddHabitModal}
+            onCloseAddHabitModal={() => setShowAddHabitModal(false)}
+          />
+        );
       case 'profile':
         return <ProfileScreen key={`profile-${refreshKey}`} />;
       default:
@@ -70,11 +82,11 @@ export const MainScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>{renderScreen()}</View>
 
-      {/* FAB — кнопка добавления записи (всегда видна) */}
+      {/* FAB — добавление записи или привычки */}
       {activeTab !== 'profile' && (
         <TouchableOpacity
           style={styles.fab}
-          onPress={handleAddEntry}
+          onPress={activeTab === 'habits' ? () => setShowAddHabitModal(true) : handleAddEntry}
           activeOpacity={0.8}
         >
           <Plus size={28} color={AppColors.white} strokeWidth={2.5} />
